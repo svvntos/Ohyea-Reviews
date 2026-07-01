@@ -1,0 +1,89 @@
+@import url('https://fonts.googleapis.com/css2?family=Playfair+Display:ital,wght@0,400..900;1,400..900&family=Plus+Jakarta+Sans:ital,wght@0,300..800;1,300..800&family=Special+Elite&family=Courier+Prime:ital,wght@0,400;0,700;1,400;1,700&family=JetBrains+Mono:wght@400;500;700&family=Cinzel:wght@600;800&family=Orbitron:wght@700;900&family=Righteous&family=VT323&family=Press+Start+2P&family=Syne:wght@700;800&family=Creepster&family=Uncial+Antiqua&display=swap');
+@import "tailwindcss";
+
+@theme {
+  --font-sans: "Plus Jakarta Sans", system-ui, sans-serif;
+  --font-display: "Playfair Display", serif;
+  --font-mono: "JetBrains Mono", ui-monospace, monospace;
+  --font-cinzel: "Cinzel", serif;
+  --font-orbitron: "Orbitron", sans-serif;
+  --font-righteous: "Righteous", sans-serif;
+  --font-vt323: "VT323", monospace;
+  --font-pressstart: "Press Start 2P", system-ui, sans-serif;
+  --font-syne: "Syne", sans-serif;
+  --font-creepster: "Creepster", system-ui, sans-serif;
+  --font-uncial: "Uncial Antiqua", serif;
+  --color-primary-text: #2c2824;
+}
+
+body {
+  background-color: #1e3a8a; /* Smooth deep retro cartoon blue */
+  background-image: 
+    radial-gradient(#111827 2px, transparent 2px),
+    radial-gradient(#111827 2px, #1e3a8a 2px);
+  background-size: 20px 20px;
+  background-position: 0 0, 10px 10px;
+  color: #f4f4f5; /* Crisp readable light gray */
+  overflow-x: hidden;
+}
+
+@keyframes blink-cursor {
+  0%, 100% { opacity: 1; }
+  50% { opacity: 0; }
+}
+
+.animate-blink-cursor {
+  animation: blink-cursor 1.06s steps(1) infinite;
+}
+
+/* Custom Neo-Brutalist shadow utility */
+.retro-shadow {
+  box-shadow: 4px 4px 0px 0px #FAE125;
+}
+.retro-shadow-lg {
+  box-shadow: 8px 8px 0px 0px #FAE125;
+}
+.retro-shadow-sm {
+  box-shadow: 2px 2px 0px 0px #FAE125;
+}
+.retro-shadow-white {
+  box-shadow: 4px 4px 0px 0px #ffffff;
+}
+
+/* Disable native selection styling to preserve highlight style */
+::selection {
+  background-color: #ffd7bd;
+  color: #2b2724;
+}
+::-moz-selection {
+  background-color: #ffd7bd;
+  color: #2b2724;
+}
+
+/* CRT monitor effect scanlines */
+.crt-lines {
+  position: relative;
+  overflow: hidden;
+}
+.crt-lines::after {
+  content: " ";
+  display: block;
+  position: absolute;
+  top: 0; left: 0; bottom: 0; right: 0;
+  background: linear-gradient(rgba(18, 16, 16, 0) 50%, rgba(0, 0, 0, 0.3) 50%), linear-gradient(90deg, rgba(255, 0, 0, 0.04), rgba(0, 255, 0, 0.02), rgba(0, 0, 255, 0.04));
+  z-index: 10;
+  background-size: 100% 4px, 6px 100%;
+  pointer-events: none;
+}
+
+/* Perfect crisp pixel rendering for Pac-Man style 2D font */
+.font-pressstart, [class*="font-pressstart"] {
+  font-family: 'Press Start 2P', system-ui, sans-serif !important;
+  image-rendering: pixelated !important;
+  image-rendering: crisp-edges !important;
+  -webkit-font-smoothing: none !important;
+  -moz-osx-font-smoothing: none !important;
+  font-smooth: never !important;
+  text-rendering: geometricPrecision !important;
+}
+
