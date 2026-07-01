@@ -28,7 +28,6 @@ import {
   Shuffle
 } from 'lucide-react';
 import { motion, AnimatePresence } from 'motion/react';
-import { MediaShaderSlider } from './components/MediaShaderSlider';
 import { INITIAL_BLOG_DATA, BlogData, GameStatus, BlogReview, BacklogGame, VideoReview, UpcomingItem } from './data/blogData';
 import { KoolAidMascot } from './components/KoolAidMascot';
 
@@ -1176,12 +1175,188 @@ export default function App() {
         </header>
         
         {/* 2. DUAL MEDIA HERO SECTION ("WHAT I'M PLAYING & WATCHING") */}
-        <MediaShaderSlider 
-          currentlyPlaying={blogData.currentlyPlaying}
-          currentlyWatching={blogData.currentlyWatching}
-          playingTheme={getGameTheme(blogData.currentlyPlaying.title)}
-          watchingTheme={getGameTheme(blogData.currentlyWatching.title)}
-        />
+        {(() => {
+          const activeItem = currentMediaMode === 'playing' ? blogData.currentlyPlaying : blogData.currentlyWatching;
+          const activeTheme = getGameTheme(activeItem.title);
+          const isPlaying = currentMediaMode === 'playing';
+
+          return (
+            <div className="flex flex-col gap-4">
+              {/* Sliding Tactical Shader Switch */}
+              <div className="flex justify-center md:justify-start">
+                <div className="relative flex items-center bg-stone-900 border-3 border-stone-950 rounded-2xl p-1 shadow-[4px_4px_0px_0px_rgba(0,0,0,1)] h-12 w-64 select-none">
+                  {/* Left Half: Playing */}
+                  <button 
+                    onClick={() => setCurrentMediaMode('playing')}
+                    className={`flex-1 text-center font-mono text-[10px] font-black z-10 transition-colors cursor-pointer flex items-center justify-center gap-1.5 ${
+                      isPlaying ? 'text-white' : 'text-stone-500 hover:text-stone-300'
+                    }`}
+                  >
+                    <Gamepad2 className="w-4 h-4" />
+                    PLAYING
+                  </button>
+
+                  {/* Right Half: Watching */}
+                  <button 
+                    onClick={() => setCurrentMediaMode('watching')}
+                    className={`flex-1 text-center font-mono text-[10px] font-black z-10 transition-colors cursor-pointer flex items-center justify-center gap-1.5 ${
+                      !isPlaying ? 'text-white' : 'text-stone-500 hover:text-stone-300'
+                    }`}
+                  >
+                    <Tv className="w-4 h-4" />
+                    WATCHING
+                  </button>
+
+                  {/* Tactile Slidable Shader Thumb with Grab Handlers */}
+                  <motion.div
+                    drag="x"
+                    dragConstraints={{ left: 0, right: 120 }}
+                    dragElastic={0.05}
+                    dragMomentum={false}
+                    animate={{ x: isPlaying ? 2 : 122 }}
+                    onDragEnd={(event, info) => {
+                      if (isPlaying && info.offset.x > 30) {
+                        setCurrentMediaMode('watching');
+                      } else if (!isPlaying && info.offset.x < -30) {
+                        setCurrentMediaMode('playing');
+                      }
+                    }}
+                    className="absolute left-1 w-28 h-8 rounded-xl bg-gradient-to-r from-red-500 to-amber-500 border-2 border-stone-950 flex items-center justify-center cursor-grab active:cursor-grabbing shadow-[2px_2px_0px_#000] z-20"
+                    title="Slide to switch mode!"
+                  >
+                    {/* Retro ridges */}
+                    <div className="flex gap-1">
+                      <div className="w-1 h-3.5 bg-stone-950/40 rounded-full" />
+                      <div className="w-1 h-3.5 bg-stone-950/40 rounded-full" />
+                      <div className="w-1 h-3.5 bg-stone-950/40 rounded-full" />
+                    </div>
+                  </motion.div>
+                </div>
+              </div>
+
+              {/* The Hero Display Board */}
+              <section 
+                style={{
+                  ...activeTheme.bgStyle,
+                  backgroundSize: '200% 200%',
+                  borderColor: activeTheme.accentColorRaw,
+                  boxShadow: `6px 6px 0px 0px ${activeTheme.accentColorRaw}`,
+                }}
+                className="group relative overflow-hidden border-2 rounded-2xl min-h-[240px] p-6 md:p-8 flex flex-col md:flex-row items-center gap-6 select-none transition-all duration-700 bg-[position:0%_0%] hover:bg-[position:100%_100%]"
+              >
+                {/* Dynamic atmospheric overlay */}
+                {activeTheme.ambientOverlay}
+
+                {/* Cover background with vivid gradients */}
+                {activeItem.imageUrl && (
+                  <div className="absolute inset-0 z-0 overflow-hidden select-none pointer-events-none">
+                    <img 
+                      src={activeItem.imageUrl} 
+                      alt="Poster Background" 
+                      referrerPolicy="no-referrer"
+                      className="w-full h-full object-cover opacity-[0.68] filter saturate-[1.25] contrast-[1.05] transition-all duration-700 group-hover:scale-105 group-hover:translate-x-1 group-hover:translate-y-1 group-hover:opacity-[0.78]"
+                    />
+                    <div className="absolute inset-0 bg-gradient-to-r from-white/92 via-white/55 to-white/10" />
+                  </div>
+                )}
+
+                {/* Left: Text Details */}
+                <div className="relative z-10 flex-1 flex flex-col gap-3.5 w-full">
+                  <div className="flex items-center gap-3">
+                    <div 
+                      style={{ borderColor: `${activeTheme.accentColorRaw}33`, color: activeTheme.accentColorRaw, backgroundColor: `${activeTheme.accentColorRaw}10` }}
+                      className="p-1.5 border rounded-lg shrink-0"
+                    >
+                      {isPlaying ? (
+                        <Gamepad2 className="w-5 h-5" />
+                      ) : (
+                        <Tv className="w-5 h-5" />
+                      )}
+                    </div>
+                    <div>
+                      <div className="flex items-center gap-2">
+                        <span className="text-[9px] font-mono uppercase tracking-widest font-black block" style={{ color: activeTheme.accentColorRaw }}>
+                          {isPlaying ? "CURRENTLY PLAYING" : "CURRENTLY WATCHING"}
+                        </span>
+                        <span className="w-1.5 h-1.5 rounded-full animate-ping" style={{ backgroundColor: activeTheme.accentColorRaw }} />
+                      </div>
+                      <h2 style={{ color: activeTheme.accentColorRaw }} className={`font-black text-2xl md:text-3xl uppercase mt-0.5 tracking-tight ${activeTheme.headingFont}`}>
+                        {activeItem.title}
+                      </h2>
+                    </div>
+                  </div>
+
+                  {/* Badges row */}
+                  <div className="flex flex-wrap gap-x-4 gap-y-2 mt-1">
+                    <div 
+                      className="flex items-center gap-2 font-mono text-[11px] border-b pb-0.5"
+                      style={{ borderColor: `${activeTheme.accentColorRaw}22` }}
+                    >
+                      <span className="font-bold opacity-75" style={{ color: activeTheme.accentColorRaw }}>
+                        {isPlaying ? "PLATFORM:" : "STREAMING ON:"}
+                      </span>
+                      <span className="font-bold tracking-wide uppercase" style={{ color: activeTheme.accentColorRaw }}>{activeItem.platform}</span>
+                    </div>
+                    {activeItem.hours && (
+                      <div 
+                        className="flex items-center gap-2 font-mono text-[11px] border-b pb-0.5"
+                        style={{ borderColor: `${activeTheme.accentColorRaw}22` }}
+                      >
+                        <span className="font-bold opacity-75" style={{ color: activeTheme.accentColorRaw }}>
+                          {isPlaying ? "TIME INVESTED:" : "PROGRESS:"}
+                        </span>
+                        <span className="font-bold tracking-wide uppercase" style={{ color: activeTheme.accentColorRaw }}>{activeItem.hours}</span>
+                      </div>
+                    )}
+                    {activeItem.rating && (
+                      <div 
+                        className="flex items-center gap-2 font-mono text-[11px] border-b pb-0.5"
+                        style={{ borderColor: `${activeTheme.accentColorRaw}22` }}
+                      >
+                        <span className="font-bold opacity-75" style={{ color: activeTheme.accentColorRaw }}>SCORE:</span>
+                        <span className="font-bold tracking-wide uppercase" style={{ color: activeTheme.accentColorRaw }}>{activeItem.rating}</span>
+                      </div>
+                    )}
+                    
+                    <span 
+                      className="font-mono text-[9px] tracking-wider uppercase px-2 py-0.5 border rounded-full font-bold"
+                      style={{ borderColor: `${activeTheme.accentColorRaw}22`, color: activeTheme.accentColorRaw, backgroundColor: `${activeTheme.accentColorRaw}0d` }}
+                    >
+                      {activeTheme.themeName}
+                    </span>
+                  </div>
+
+                  {activeItem.note && (
+                    <p 
+                      className={`text-xs leading-relaxed max-w-xl select-text border-l-2 pl-3 mt-1 italic ${activeTheme.bodyFont}`}
+                      style={{ borderLeftColor: activeTheme.accentColorRaw, color: activeTheme.accentColorRaw }}
+                    >
+                      "{activeItem.note}"
+                    </p>
+                  )}
+                </div>
+
+                {/* Right: Sharp Vertical Cover Poster */}
+                {activeItem.imageUrl && (
+                  <div 
+                    className="relative z-10 shrink-0 w-28 sm:w-32 md:w-36 aspect-[2/3] overflow-hidden border-2 rounded-xl select-none bg-stone-100 self-center md:self-auto hover:rotate-1 hover:scale-102 transition-all duration-300"
+                    style={{
+                      borderColor: activeTheme.accentColorRaw,
+                      boxShadow: `4px 4px 0px 0px ${activeTheme.accentColorRaw}`
+                    }}
+                  >
+                    <img 
+                      src={activeItem.imageUrl} 
+                      alt={`${activeItem.title} cover`}
+                      referrerPolicy="no-referrer"
+                      className="w-full h-full object-cover filter saturate-[1.25] contrast-[1.05]"
+                    />
+                  </div>
+                )}
+              </section>
+            </div>
+          );
+        })()}
 
         {/* ADMIN MANAGEMENT HUB (When active) */}
         <AnimatePresence>
