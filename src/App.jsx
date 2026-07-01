@@ -1288,7 +1288,7 @@ export default function App() {
                     "3px 3px 0px #09090b, -3px -3px 0px #09090b, 3px -3px 0px #09090b, -3px 3px 0px #09090b, 0px 3px 0px #09090b, 0px -3px 0px #09090b, 3px 0px 0px #09090b, -3px 0px 0px #09090b, 6px 6px 0px #ef4444",
                 }}
               >
-                <ScrambleText text="KOOL-AIDE" />
+                <ScrambleText text="KOOL-AID" />
               </h1>
             </div>
 
@@ -3162,7 +3162,7 @@ export default function App() {
         {/* 5. FOOTER */}
         <footer className="border-t border-stone-200 pt-6 text-center font-mono text-[10px] text-stone-400 select-none flex flex-col gap-1.5 pb-8 font-bold">
           <div className="flex justify-center items-center gap-2 select-text">
-            <span>KOOL-AIDE</span>
+            <span>KOOL-AID</span>
             <span>•</span>
             <span>All Rights Reserved</span>
             <span>•</span>
