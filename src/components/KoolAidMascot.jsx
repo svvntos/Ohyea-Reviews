@@ -1,14 +1,5 @@
-import React from 'react';
-import { motion } from 'motion/react';
-
-interface KoolAidMascotProps {
-  className?: string;
-  liquidColor?: string;
-  highlightColor?: string;
-  shadowColor?: string;
-  handleColor?: string;
-  handleShineColor?: string;
-}
+import React from "react";
+import { motion } from "motion/react";
 
 // 24x24 Custom Pixel Art Grid
 // . = transparent
@@ -50,26 +41,26 @@ const GRID = [
   "....bbbb.....bbbb.......",
 ];
 
-export const KoolAidMascot: React.FC<KoolAidMascotProps> = ({ 
-  className = 'w-12 h-12',
-  liquidColor = '#ef4444',
-  highlightColor = '#f87171',
-  shadowColor = '#991b1b',
-  handleColor = '#0284c7',
-  handleShineColor = '#38bdf8',
+export const KoolAidMascot = ({
+  className = "w-12 h-12",
+  liquidColor = "#ef4444",
+  highlightColor = "#f87171",
+  shadowColor = "#991b1b",
+  handleColor = "#0284c7",
+  handleShineColor = "#38bdf8",
 }) => {
-  const COLOR_MAP: Record<string, string> = {
-    '.': 'transparent',
-    'b': '#09090b',
-    'g': '#cbd5e1',
-    'w': '#ffffff',
-    'r': liquidColor,
-    'R': highlightColor,
-    'd': shadowColor,
-    'k': handleColor,
-    'c': handleShineColor,
-    'o': '#e2e8f0',
-    'y': '#94a3b8',
+  const COLOR_MAP = {
+    ".": "transparent",
+    b: "#09090b",
+    g: "#cbd5e1",
+    w: "#ffffff",
+    r: liquidColor,
+    R: highlightColor,
+    d: shadowColor,
+    k: handleColor,
+    c: handleShineColor,
+    o: "#e2e8f0",
+    y: "#94a3b8",
   };
 
   return (
@@ -81,7 +72,7 @@ export const KoolAidMascot: React.FC<KoolAidMascotProps> = ({
       transition={{
         duration: 3,
         repeat: Infinity,
-        ease: 'easeInOut',
+        ease: "easeInOut",
       }}
       whileHover={{
         scale: 1.15,
@@ -97,9 +88,9 @@ export const KoolAidMascot: React.FC<KoolAidMascotProps> = ({
         className="w-full h-full drop-shadow-[0_4px_6px_rgba(239,68,68,0.15)]"
       >
         {GRID.map((row, y) => {
-          return row.split('').map((char, x) => {
+          return row.split("").map((char, x) => {
             const color = COLOR_MAP[char];
-            if (color === 'transparent') return null;
+            if (color === "transparent") return null;
             return (
               <rect
                 key={`${x}-${y}`}

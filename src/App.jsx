@@ -1,48 +1,28 @@
-import React, { useEffect, useState, useRef } from 'react';
-import { 
-  Loader2, 
-  ArrowLeft, 
-  Search, 
-  X, 
-  Gamepad2, 
-  Tv, 
-  Calendar, 
-  Award, 
-  BookOpen, 
-  Plus, 
-  Trash, 
-  Save, 
-  Edit3, 
-  ExternalLink, 
-  Sparkles, 
+import React, { useEffect, useState, useRef } from "react";
+import {
+  Loader2,
+  ArrowLeft,
+  Search,
+  X,
+  Gamepad2,
+  Tv,
+  Calendar,
+  Award,
+  Trash,
+  Sparkles,
   CheckCircle,
-  HelpCircle,
-  Clock,
   Layers,
-  FileText,
-  RotateCw,
-  ChevronLeft,
-  ChevronRight,
   Play,
   MoreVertical,
-  Shuffle
-} from 'lucide-react';
-import { motion, AnimatePresence } from 'motion/react';
-import { INITIAL_BLOG_DATA, BlogData, GameStatus, BlogReview, BacklogGame, VideoReview, UpcomingItem } from './data/blogData';
-import { KoolAidMascot } from './components/KoolAidMascot';
+} from "lucide-react";
+import { motion, AnimatePresence } from "motion/react";
+import { INITIAL_BLOG_DATA } from "./data/blogData";
+import { KoolAidMascot } from "./components/KoolAidMascot";
 
-interface Rect {
-  left: number;
-  top: number;
-  width: number;
-  height: number;
-}
+const CHARACTERS =
+  "ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz0123456789!@#$%^&*()_+";
 
-type UIState = 'IDLE' | 'GENERATING' | 'DONE';
-
-const CHARACTERS = 'ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz0123456789!@#$%^&*()_+';
-
-const RANDOM_TITLES: Record<'game' | 'movie' | 'show', string[]> = {
+const RANDOM_TITLES = {
   game: [
     "Elden Ring",
     "Cyberpunk 2077",
@@ -58,7 +38,7 @@ const RANDOM_TITLES: Record<'game' | 'movie' | 'show', string[]> = {
     "Disco Elysium",
     "Hollow Knight",
     "Spiderman 2",
-    "God of War Ragnarok"
+    "God of War Ragnarok",
   ],
   movie: [
     "Spirited Away",
@@ -75,7 +55,7 @@ const RANDOM_TITLES: Record<'game' | 'movie' | 'show', string[]> = {
     "The Matrix",
     "Mad Max: Fury Road",
     "Whiplash",
-    "Pulp Fiction"
+    "Pulp Fiction",
   ],
   show: [
     "Ted Lasso",
@@ -92,11 +72,11 @@ const RANDOM_TITLES: Record<'game' | 'movie' | 'show', string[]> = {
     "Cyberpunk: Edgerunners",
     "BoJack Horseman",
     "Andor",
-    "Fleabag"
-  ]
+    "Fleabag",
+  ],
 };
 
-const ScrambleText = ({ text }: { text: string }) => {
+const ScrambleText = ({ text }) => {
   const [displayText, setDisplayText] = useState(text);
 
   useEffect(() => {
@@ -104,12 +84,15 @@ const ScrambleText = ({ text }: { text: string }) => {
     const step = Math.max(1, Math.floor(text.length / 15));
     const interval = setInterval(() => {
       setDisplayText(() => {
-        let next = '';
+        let next = "";
         for (let i = 0; i < text.length; i++) {
           if (i < frame) {
             next += text[i];
           } else {
-            next += text[i] === ' ' ? ' ' : CHARACTERS[Math.floor(Math.random() * CHARACTERS.length)];
+            next +=
+              text[i] === " "
+                ? " "
+                : CHARACTERS[Math.floor(Math.random() * CHARACTERS.length)];
           }
         }
         return next;
@@ -129,59 +112,73 @@ const ScrambleText = ({ text }: { text: string }) => {
 const PixelArtLoader = () => {
   const COLS = 7;
   const ROWS = 9;
-  
-  const [pixels, setPixels] = useState(() => Array.from({length: ROWS * COLS}, (_, i) => ({
-    r: Math.floor(i / COLS),
-    c: i % COLS,
-    active: false,
-    color: '#000',
-    char: ''
-  })));
+  const [pixels, setPixels] = useState(() =>
+    Array.from({ length: ROWS * COLS }, (_, i) => ({
+      r: Math.floor(i / COLS),
+      c: i % COLS,
+      active: false,
+      color: "#000",
+      char: "",
+    })),
+  );
 
   useEffect(() => {
     const update = () => {
-      setPixels(prev => prev.map(p => {
-        const dx = p.c - COLS / 2;
-        const dy = p.r - ROWS / 2;
-        const isActive = Math.random() > 0.1 && (dx*dx*1.8 + dy*dy < 14);
-        if (isActive) {
-          const isWhite = Math.random() < 0.25 && p.c <= COLS / 2;
-          const shades = ['#334155', '#475569', '#64748b', '#94a3b8', '#cbd5e1'];
-          return {
-            ...p,
-            active: true,
-            color: isWhite ? '#ffffff' : shades[Math.floor(Math.random() * shades.length)],
-            char: isWhite ? Math.floor(Math.random() * 10).toString() : ''
-          };
-        } else {
-          return { ...p, active: false };
-        }
-      }));
+      setPixels((prev) =>
+        prev.map((p) => {
+          const dx = p.c - COLS / 2;
+          const dy = p.r - ROWS / 2;
+          const isActive = Math.random() > 0.1 && dx * dx * 1.8 + dy * dy < 14;
+          if (isActive) {
+            const isWhite = Math.random() < 0.25 && p.c <= COLS / 2;
+            const shades = [
+              "#334155",
+              "#475569",
+              "#64748b",
+              "#94a3b8",
+              "#cbd5e1",
+            ];
+            return {
+              ...p,
+              active: true,
+              color: isWhite
+                ? "#ffffff"
+                : shades[Math.floor(Math.random() * shades.length)],
+              char: isWhite ? Math.floor(Math.random() * 10).toString() : "",
+            };
+          } else {
+            return { ...p, active: false };
+          }
+        }),
+      );
     };
-    
     update();
     const interval = setInterval(update, 150);
     return () => clearInterval(interval);
   }, []);
 
   return (
-    <motion.div 
+    <motion.div
       initial={{ opacity: 0, scale: 0.95 }}
       animate={{ opacity: 1, scale: 1 }}
       exit={{ opacity: 0, scale: 0.95 }}
       className="flex pointer-events-none shrink-0"
     >
-      <div 
-        className="grid gap-[1px]" 
-        style={{ gridTemplateColumns: `repeat(${COLS}, minmax(0, 1fr))`, width: '70px', height: '90px' }}
+      <div
+        className="grid gap-[1px]"
+        style={{
+          gridTemplateColumns: `repeat(${COLS}, minmax(0, 1fr))`,
+          width: "70px",
+          height: "90px",
+        }}
       >
         {pixels.map((p, i) => (
-          <div 
-            key={i} 
+          <div
+            key={i}
             className="flex items-center justify-center text-[10px] font-mono leading-none font-bold overflow-hidden"
             style={{
-              backgroundColor: p.active ? p.color : 'transparent',
-              color: p.color === '#ffffff' ? '#000000' : 'transparent',
+              backgroundColor: p.active ? p.color : "transparent",
+              color: p.color === "#ffffff" ? "#000000" : "transparent",
             }}
           >
             {p.char}
@@ -192,35 +189,21 @@ const PixelArtLoader = () => {
   );
 };
 
-// Thematic engine to customize the visual environment, typography, colors and ambient effects based on the selected game
-interface GameTheme {
-  themeName: string;
-  headingFont: string;
-  bodyFont: string;
-  bgStyle: React.CSSProperties;
-  borderStyle: React.CSSProperties;
-  accentTextColor: string;
-  accentBgColor: string;
-  accentBorderColor: string;
-  accentColorRaw: string;
-  badgeStyle: string;
-  badgeStyleOverride?: React.CSSProperties;
-  shadowStyle: React.CSSProperties;
-  textColor: string;
-  ambientOverlay?: React.ReactNode;
-}
-
-const getGameTheme = (gameTitle: string): GameTheme => {
+const getGameTheme = (gameTitle) => {
   const titleLower = gameTitle.toLowerCase();
 
   // 1. SPIRITED AWAY (STUDIO GHIBLI / COZY WATERCOLOR)
-  if (titleLower.includes("spirited") || titleLower.includes("ghibli") || titleLower.includes("away")) {
+  if (
+    titleLower.includes("spirited") ||
+    titleLower.includes("ghibli") ||
+    titleLower.includes("away")
+  ) {
     return {
       themeName: "STUDIO GHIBLI // WATERCOLOR GREEN",
       headingFont: "font-display",
       bodyFont: "font-sans",
       bgStyle: {
-        background: "linear-gradient(135deg, #FAF8F2 0%, #E9F4E6 100%)"
+        background: "linear-gradient(135deg, #FAF8F2 0%, #E9F4E6 100%)",
       },
       borderStyle: { borderColor: "#4C7C41" },
       accentTextColor: "text-[#4C7C41]",
@@ -234,7 +217,7 @@ const getGameTheme = (gameTitle: string): GameTheme => {
         <div className="absolute inset-0 pointer-events-none overflow-hidden z-0 opacity-40">
           <div className="absolute inset-0 bg-[radial-gradient(circle_at_center,rgba(76,124,65,0.06)_0%,transparent_70%)]" />
         </div>
-      )
+      ),
     };
   }
 
@@ -245,7 +228,7 @@ const getGameTheme = (gameTitle: string): GameTheme => {
       headingFont: "font-sans",
       bodyFont: "font-sans",
       bgStyle: {
-        background: "linear-gradient(135deg, #F5F9FC 0%, #E3EDFA 100%)"
+        background: "linear-gradient(135deg, #F5F9FC 0%, #E3EDFA 100%)",
       },
       borderStyle: { borderColor: "#1B4375" },
       accentTextColor: "text-[#1B4375]",
@@ -259,7 +242,7 @@ const getGameTheme = (gameTitle: string): GameTheme => {
         <div className="absolute inset-0 pointer-events-none overflow-hidden z-0 opacity-40">
           <div className="absolute inset-0 bg-[radial-gradient(circle_at_center,rgba(230,161,37,0.06)_0%,transparent_70%)]" />
         </div>
-      )
+      ),
     };
   }
 
@@ -270,7 +253,7 @@ const getGameTheme = (gameTitle: string): GameTheme => {
       headingFont: "font-cinzel",
       bodyFont: "font-sans",
       bgStyle: {
-        background: "linear-gradient(135deg, #FAF7F2 0%, #F5E6CC 100%)"
+        background: "linear-gradient(135deg, #FAF7F2 0%, #F5E6CC 100%)",
       },
       borderStyle: { borderColor: "#A8701D" },
       accentTextColor: "text-[#A8701D]",
@@ -284,18 +267,23 @@ const getGameTheme = (gameTitle: string): GameTheme => {
         <div className="absolute inset-0 pointer-events-none overflow-hidden z-0 opacity-30">
           <div className="absolute inset-0 bg-[radial-gradient(circle_at_center,rgba(168,112,29,0.05)_0%,transparent_70%)]" />
         </div>
-      )
+      ),
     };
   }
 
   // 4. FINAL FANTASY VII REMAKE (COZY SAGE & MINT)
-  if (titleLower.includes("vii") || titleLower.includes("ff7") || titleLower.includes("final fantasy 7") || titleLower.includes("remake")) {
+  if (
+    titleLower.includes("vii") ||
+    titleLower.includes("ff7") ||
+    titleLower.includes("final fantasy 7") ||
+    titleLower.includes("remake")
+  ) {
     return {
       themeName: "SHINRA SAGE // MINT HARMONY",
       headingFont: "font-orbitron",
       bodyFont: "font-mono",
       bgStyle: {
-        background: "linear-gradient(135deg, #F6FAF7 0%, #E3EFE8 100%)"
+        background: "linear-gradient(135deg, #F6FAF7 0%, #E3EFE8 100%)",
       },
       borderStyle: { borderColor: "#246B54" },
       accentTextColor: "text-[#246B54]",
@@ -309,18 +297,22 @@ const getGameTheme = (gameTitle: string): GameTheme => {
         <div className="absolute inset-0 pointer-events-none overflow-hidden z-0 opacity-30">
           <div className="absolute inset-0 bg-[radial-gradient(circle_at_center,rgba(36,107,84,0.05)_0%,transparent_70%)]" />
         </div>
-      )
+      ),
     };
   }
 
   // 5. FINAL FANTASY XVI (VALISTHEA PEACH & TERRACOTTA)
-  if (titleLower.includes("xvi") || titleLower.includes("ff16") || titleLower.includes("final fantasy 16")) {
+  if (
+    titleLower.includes("xvi") ||
+    titleLower.includes("ff16") ||
+    titleLower.includes("final fantasy 16")
+  ) {
     return {
       themeName: "ROSARIA SUNSET // PEACH TERRACOTTA",
       headingFont: "font-uncial",
       bodyFont: "font-sans",
       bgStyle: {
-        background: "linear-gradient(135deg, #FCFAF7 0%, #F6E2D5 100%)"
+        background: "linear-gradient(135deg, #FCFAF7 0%, #F6E2D5 100%)",
       },
       borderStyle: { borderColor: "#C2532D" },
       accentTextColor: "text-[#C2532D]",
@@ -334,18 +326,22 @@ const getGameTheme = (gameTitle: string): GameTheme => {
         <div className="absolute inset-0 pointer-events-none overflow-hidden z-0 opacity-30">
           <div className="absolute inset-0 bg-[radial-gradient(circle_at_center,rgba(194,83,45,0.05)_0%,transparent_70%)]" />
         </div>
-      )
+      ),
     };
   }
 
   // 6. RATCHET & CLANK: RIFT APART (COSMIC LAVENDER)
-  if (titleLower.includes("ratchet") || titleLower.includes("clank") || titleLower.includes("rift apart")) {
+  if (
+    titleLower.includes("ratchet") ||
+    titleLower.includes("clank") ||
+    titleLower.includes("rift apart")
+  ) {
     return {
       themeName: "NEBULA LAVENDER // ORCHID HEATHER",
       headingFont: "font-righteous",
       bodyFont: "font-mono",
       bgStyle: {
-        background: "linear-gradient(135deg, #FAF7FC 0%, #EDE1F5 100%)"
+        background: "linear-gradient(135deg, #FAF7FC 0%, #EDE1F5 100%)",
       },
       borderStyle: { borderColor: "#7C449C" },
       accentTextColor: "text-[#7C449C]",
@@ -359,19 +355,25 @@ const getGameTheme = (gameTitle: string): GameTheme => {
         <div className="absolute inset-0 pointer-events-none overflow-hidden z-0 opacity-30">
           <div className="absolute inset-0 bg-[radial-gradient(circle_at_center,rgba(124,68,156,0.05)_0%,transparent_70%)]" />
         </div>
-      )
+      ),
     };
   }
 
   // 7. GENERIC MATCHERS
   // Fantasy/RPG Theme
-  if (titleLower.includes("fantasy") || titleLower.includes("zelda") || titleLower.includes("elder") || titleLower.includes("ring") || titleLower.includes("witcher")) {
+  if (
+    titleLower.includes("fantasy") ||
+    titleLower.includes("zelda") ||
+    titleLower.includes("elder") ||
+    titleLower.includes("ring") ||
+    titleLower.includes("witcher")
+  ) {
     return {
       themeName: "MYSTICAL PARCHMENT // AMBER OAK",
       headingFont: "font-cinzel",
       bodyFont: "font-sans",
       bgStyle: {
-        background: "linear-gradient(135deg, #FAF6EE 0%, #EDE2CC 100%)"
+        background: "linear-gradient(135deg, #FAF6EE 0%, #EDE2CC 100%)",
       },
       borderStyle: { borderColor: "#825D38" },
       accentTextColor: "text-[#825D38]",
@@ -385,18 +387,25 @@ const getGameTheme = (gameTitle: string): GameTheme => {
         <div className="absolute inset-0 pointer-events-none overflow-hidden z-0 opacity-20">
           <div className="absolute inset-0 bg-[radial-gradient(circle_at_center,rgba(130,93,56,0.05)_0%,transparent_70%)]" />
         </div>
-      )
+      ),
     };
   }
 
   // Cyberpunk/Futuristic
-  if (titleLower.includes("cyber") || titleLower.includes("punk") || titleLower.includes("deus") || titleLower.includes("halo") || titleLower.includes("metroid") || titleLower.includes("star")) {
+  if (
+    titleLower.includes("cyber") ||
+    titleLower.includes("punk") ||
+    titleLower.includes("deus") ||
+    titleLower.includes("halo") ||
+    titleLower.includes("metroid") ||
+    titleLower.includes("star")
+  ) {
     return {
       themeName: "CYBER STEEL // STEEL BLUE",
       headingFont: "font-orbitron",
       bodyFont: "font-mono",
       bgStyle: {
-        background: "linear-gradient(135deg, #F5F9FA 0%, #DCEEF2 100%)"
+        background: "linear-gradient(135deg, #F5F9FA 0%, #DCEEF2 100%)",
       },
       borderStyle: { borderColor: "#1A6B7A" },
       accentTextColor: "text-[#1A6B7A]",
@@ -410,18 +419,26 @@ const getGameTheme = (gameTitle: string): GameTheme => {
         <div className="absolute inset-0 pointer-events-none overflow-hidden z-0 opacity-20">
           <div className="absolute inset-0 bg-[radial-gradient(circle_at_center,rgba(26,107,122,0.05)_0%,transparent_70%)]" />
         </div>
-      )
+      ),
     };
   }
 
   // Retro/Pixel/Console
-  if (titleLower.includes("mario") || titleLower.includes("pokemon") || titleLower.includes("kart") || titleLower.includes("smash") || titleLower.includes("retro") || titleLower.includes("arcade") || titleLower.includes("sonic")) {
+  if (
+    titleLower.includes("mario") ||
+    titleLower.includes("pokemon") ||
+    titleLower.includes("kart") ||
+    titleLower.includes("smash") ||
+    titleLower.includes("retro") ||
+    titleLower.includes("arcade") ||
+    titleLower.includes("sonic")
+  ) {
     return {
       themeName: "RETRO PLAYGROUND // BERRY CREAM",
       headingFont: "font-righteous",
       bodyFont: "font-mono",
       bgStyle: {
-        background: "linear-gradient(135deg, #FFF7F7 0%, #FCDDDD 100%)"
+        background: "linear-gradient(135deg, #FFF7F7 0%, #FCDDDD 100%)",
       },
       borderStyle: { borderColor: "#BF2A2A" },
       accentTextColor: "text-[#BF2A2A]",
@@ -435,18 +452,26 @@ const getGameTheme = (gameTitle: string): GameTheme => {
         <div className="absolute inset-0 pointer-events-none overflow-hidden z-0 opacity-20">
           <div className="absolute inset-0 bg-[radial-gradient(circle_at_center,rgba(191,42,42,0.05)_0%,transparent_70%)]" />
         </div>
-      )
+      ),
     };
   }
 
   // Horror/Scary
-  if (titleLower.includes("souls") || titleLower.includes("resident") || titleLower.includes("evil") || titleLower.includes("horror") || titleLower.includes("dark") || titleLower.includes("silent") || titleLower.includes("doom")) {
+  if (
+    titleLower.includes("souls") ||
+    titleLower.includes("resident") ||
+    titleLower.includes("evil") ||
+    titleLower.includes("horror") ||
+    titleLower.includes("dark") ||
+    titleLower.includes("silent") ||
+    titleLower.includes("doom")
+  ) {
     return {
       themeName: "COZY GOTHIC // MISTY ASH",
       headingFont: "font-creepster",
       bodyFont: "font-sans",
       bgStyle: {
-        background: "linear-gradient(135deg, #FAF9F8 0%, #EBE5E0 100%)"
+        background: "linear-gradient(135deg, #FAF9F8 0%, #EBE5E0 100%)",
       },
       borderStyle: { borderColor: "#5C4F44" },
       accentTextColor: "text-[#5C4F44]",
@@ -460,7 +485,7 @@ const getGameTheme = (gameTitle: string): GameTheme => {
         <div className="absolute inset-0 pointer-events-none overflow-hidden z-0 opacity-20">
           <div className="absolute inset-0 bg-[radial-gradient(circle_at_center,rgba(92,79,68,0.05)_0%,transparent_70%)]" />
         </div>
-      )
+      ),
     };
   }
 
@@ -473,8 +498,7 @@ const getGameTheme = (gameTitle: string): GameTheme => {
 
   const hue = hash % 360;
   const saturation = 50 + (hash % 20); // 50% - 70%
-  const lightness = 35 + (hash % 15);  // 35% - 50% (deep enough for legible high-contrast accent text on light cream)
-  
+  const lightness = 35 + (hash % 15); // 35% - 50% (deep enough for legible high-contrast accent text on light cream)
   const accentColorHex = `hsl(${hue}, ${saturation}%, ${lightness}%)`;
   const bgGradStart = `hsl(${hue}, 30%, 98%)`;
   const bgGradEnd = `hsl(${(hue + 25) % 360}, 20%, 93%)`;
@@ -484,7 +508,7 @@ const getGameTheme = (gameTitle: string): GameTheme => {
     "font-display",
     "font-syne",
     "font-cinzel",
-    "font-righteous"
+    "font-righteous",
   ];
   const headingFont = FONTS[hash % FONTS.length];
   const bodyFont = "font-sans";
@@ -494,7 +518,7 @@ const getGameTheme = (gameTitle: string): GameTheme => {
     headingFont,
     bodyFont,
     bgStyle: {
-      background: `linear-gradient(135deg, ${bgGradStart} 0%, ${bgGradEnd} 100%)`
+      background: `linear-gradient(135deg, ${bgGradStart} 0%, ${bgGradEnd} 100%)`,
     },
     borderStyle: { borderColor: accentColorHex },
     accentTextColor: `text-[${accentColorHex}]`,
@@ -506,41 +530,52 @@ const getGameTheme = (gameTitle: string): GameTheme => {
     badgeStyleOverride: {
       backgroundColor: `hsla(${hue}, ${saturation}%, 96%, 0.8)`,
       borderColor: accentColorHex,
-      color: accentColorHex
+      color: accentColorHex,
     },
-    shadowStyle: { 
-      boxShadow: "0 8px 24px rgba(0,0,0,0.05)"
+    shadowStyle: {
+      boxShadow: "0 8px 24px rgba(0,0,0,0.05)",
     },
     ambientOverlay: (
       <div className="absolute inset-0 pointer-events-none overflow-hidden z-0 opacity-20">
-        <div 
+        <div
           className="absolute inset-0"
           style={{
-            background: `radial-gradient(circle at 70% 30%, hsla(${hue}, ${saturation}%, ${lightness}%, 0.08) 0%, transparent 70%)`
+            background: `radial-gradient(circle at 70% 30%, hsla(${hue}, ${saturation}%, ${lightness}%, 0.08) 0%, transparent 70%)`,
           }}
         />
       </div>
-    )
+    ),
   };
 };
 
 export default function App() {
   // Core Blog Data
-  const [blogData, setBlogData] = useState<BlogData>(() => {
-    const saved = localStorage.getItem('kool_aid_blog_data_v2');
-    let loadedData: BlogData = INITIAL_BLOG_DATA;
+  const [blogData, setBlogData] = useState(() => {
+    const saved = localStorage.getItem("kool_aid_blog_data_v2");
+    let loadedData = INITIAL_BLOG_DATA;
     if (saved) {
       try {
         const parsed = JSON.parse(saved);
         loadedData = {
           ...INITIAL_BLOG_DATA,
           ...parsed,
-          currentlyPlaying: parsed.currentlyPlaying || INITIAL_BLOG_DATA.currentlyPlaying,
-          currentlyWatching: parsed.currentlyWatching || INITIAL_BLOG_DATA.currentlyWatching,
+          currentlyPlaying:
+            parsed.currentlyPlaying || INITIAL_BLOG_DATA.currentlyPlaying,
+          currentlyWatching:
+            parsed.currentlyWatching || INITIAL_BLOG_DATA.currentlyWatching,
           reviews: parsed.reviews || INITIAL_BLOG_DATA.reviews,
-          upcomingGames: parsed.upcomingGames && parsed.upcomingGames.length > 0 ? parsed.upcomingGames : INITIAL_BLOG_DATA.upcomingGames,
-          upcomingShows: parsed.upcomingShows && parsed.upcomingShows.length > 0 ? parsed.upcomingShows : INITIAL_BLOG_DATA.upcomingShows,
-          upcomingMovies: parsed.upcomingMovies && parsed.upcomingMovies.length > 0 ? parsed.upcomingMovies : INITIAL_BLOG_DATA.upcomingMovies,
+          upcomingGames:
+            parsed.upcomingGames && parsed.upcomingGames.length > 0
+              ? parsed.upcomingGames
+              : INITIAL_BLOG_DATA.upcomingGames,
+          upcomingShows:
+            parsed.upcomingShows && parsed.upcomingShows.length > 0
+              ? parsed.upcomingShows
+              : INITIAL_BLOG_DATA.upcomingShows,
+          upcomingMovies:
+            parsed.upcomingMovies && parsed.upcomingMovies.length > 0
+              ? parsed.upcomingMovies
+              : INITIAL_BLOG_DATA.upcomingMovies,
         };
       } catch (e) {
         console.error("Failed to parse saved blog data", e);
@@ -551,19 +586,27 @@ export default function App() {
     const cleanReviews = (loadedData.reviews || []).filter((rev) => {
       const gTitle = (rev.gameTitle || "").toLowerCase();
       const title = (rev.title || "").toLowerCase();
-      return !gTitle.includes("cyberpunk") && !gTitle.includes("spider-man") &&
-             !title.includes("cyberpunk") && !title.includes("spider-man");
+      return (
+        !gTitle.includes("cyberpunk") &&
+        !gTitle.includes("spider-man") &&
+        !title.includes("cyberpunk") &&
+        !title.includes("spider-man")
+      );
     });
 
-    const cleanUpcomingMovies = (loadedData.upcomingMovies || []).filter((item) => {
-      const title = (item.title || "").toLowerCase();
-      return !title.includes("cyberpunk") && !title.includes("spider-man");
-    });
+    const cleanUpcomingMovies = (loadedData.upcomingMovies || []).filter(
+      (item) => {
+        const title = (item.title || "").toLowerCase();
+        return !title.includes("cyberpunk") && !title.includes("spider-man");
+      },
+    );
 
-    const cleanUpcomingGames = (loadedData.upcomingGames || []).filter((item) => {
-      const title = (item.title || "").toLowerCase();
-      return !title.includes("cyberpunk") && !title.includes("spider-man");
-    });
+    const cleanUpcomingGames = (loadedData.upcomingGames || []).filter(
+      (item) => {
+        const title = (item.title || "").toLowerCase();
+        return !title.includes("cyberpunk") && !title.includes("spider-man");
+      },
+    );
 
     return {
       ...loadedData,
@@ -575,24 +618,64 @@ export default function App() {
 
   // Mascot Color Presets & State for "Loud Cool Kid"
   const MASCOT_PRESETS = [
-    { id: 'cherry', name: 'Cherry 🍒', liquid: '#ef4444', highlight: '#f87171', shadow: '#991b1b', handle: '#0284c7', shine: '#38bdf8' },
-    { id: 'blueberry', name: 'Blueberry 🧊', liquid: '#3b82f6', highlight: '#60a5fa', shadow: '#1d4ed8', handle: '#eab308', shine: '#fef08a' },
-    { id: 'lime', name: 'Lime 🍋', liquid: '#10b981', highlight: '#34d399', shadow: '#047857', handle: '#ec4899', shine: '#f472b6' },
-    { id: 'grape', name: 'Grape 🍇', liquid: '#8b5cf6', highlight: '#a78bfa', shadow: '#5b21b6', handle: '#10b981', shine: '#34d399' },
-    { id: 'orange', name: 'Orange 🍊', liquid: '#f97316', highlight: '#fb923c', shadow: '#c2410c', handle: '#06b6d4', shine: '#22d3ee' },
+    {
+      id: "cherry",
+      name: "Cherry 🍒",
+      liquid: "#ef4444",
+      highlight: "#f87171",
+      shadow: "#991b1b",
+      handle: "#0284c7",
+      shine: "#38bdf8",
+    },
+    {
+      id: "blueberry",
+      name: "Blueberry 🧊",
+      liquid: "#3b82f6",
+      highlight: "#60a5fa",
+      shadow: "#1d4ed8",
+      handle: "#eab308",
+      shine: "#fef08a",
+    },
+    {
+      id: "lime",
+      name: "Lime 🍋",
+      liquid: "#10b981",
+      highlight: "#34d399",
+      shadow: "#047857",
+      handle: "#ec4899",
+      shine: "#f472b6",
+    },
+    {
+      id: "grape",
+      name: "Grape 🍇",
+      liquid: "#8b5cf6",
+      highlight: "#a78bfa",
+      shadow: "#5b21b6",
+      handle: "#10b981",
+      shine: "#34d399",
+    },
+    {
+      id: "orange",
+      name: "Orange 🍊",
+      liquid: "#f97316",
+      highlight: "#fb923c",
+      shadow: "#c2410c",
+      handle: "#06b6d4",
+      shine: "#22d3ee",
+    },
   ];
 
-  const [selectedPresetId, setSelectedPresetId] = useState('cherry');
+  const [selectedPresetId, setSelectedPresetId] = useState("cherry");
   const [customMascot, setCustomMascot] = useState({
-    liquidColor: '#ef4444',
-    highlightColor: '#f87171',
-    shadowColor: '#991b1b',
-    handleColor: '#0284c7',
-    handleShineColor: '#38bdf8',
+    liquidColor: "#ef4444",
+    highlightColor: "#f87171",
+    shadowColor: "#991b1b",
+    handleColor: "#0284c7",
+    handleShineColor: "#38bdf8",
   });
 
-  const handleSelectPreset = (id: string) => {
-    const found = MASCOT_PRESETS.find(p => p.id === id);
+  const handleSelectPreset = (id) => {
+    const found = MASCOT_PRESETS.find((p) => p.id === id);
     if (found) {
       setSelectedPresetId(id);
       setCustomMascot({
@@ -606,56 +689,73 @@ export default function App() {
   };
 
   // Section / Navigation States
-  const [activeSection, setActiveSection] = useState<'reviews' | 'upcoming-games' | 'upcoming-shows' | 'upcoming-movies'>('reviews');
-  const [selectedReviewId, setSelectedReviewId] = useState<string | null>(null);
+  const [activeSection, setActiveSection] = useState("reviews");
+  const [selectedReviewId, setSelectedReviewId] = useState(null);
   const [showAdmin, setShowAdmin] = useState(false);
-  const [activeVideoUrl, setActiveVideoUrl] = useState<string | null>(null);
-  const [selectedFilters, setSelectedFilters] = useState<('game' | 'movie' | 'show')[]>([]);
+  const [activeVideoUrl, setActiveVideoUrl] = useState(null);
+  const [selectedFilters, setSelectedFilters] = useState([]);
   const [isFilterDropdownOpen, setIsFilterDropdownOpen] = useState(false);
 
   // Search & Generator States
-  const [userInput, setUserInput] = useState('');
-  const [searchCategory, setSearchCategory] = useState<'game' | 'movie' | 'show'>('game');
-  const [newReviewCategory, setNewReviewCategory] = useState<'game' | 'movie' | 'show'>('game');
+  const [userInput, setUserInput] = useState("");
+  const [searchCategory, setSearchCategory] = useState("game");
+  const [newReviewCategory, setNewReviewCategory] = useState("game");
   const [isGenerating, setIsGenerating] = useState(false);
   const [isPinning, setIsPinning] = useState(false);
   const [isSubmittingReview, setIsSubmittingReview] = useState(false);
   const [isSubmittingBacklog, setIsSubmittingBacklog] = useState(false);
 
   // Local Search state for Done Reviews
-  const [reviewsSearchQuery, setReviewsSearchQuery] = useState('');
-  const [appliedSearchQuery, setAppliedSearchQuery] = useState('');
+  const [reviewsSearchQuery, setReviewsSearchQuery] = useState("");
+  const [appliedSearchQuery, setAppliedSearchQuery] = useState("");
 
   // Search & Add states for Upcoming sections
-  const [upcomingQuery, setUpcomingQuery] = useState('');
+  const [upcomingQuery, setUpcomingQuery] = useState("");
   const [isSearchingUpcoming, setIsSearchingUpcoming] = useState(false);
-  const [upcomingPreview, setUpcomingPreview] = useState<UpcomingItem | null>(null);
-  const [upcomingNote, setUpcomingNote] = useState('');
+  const [upcomingPreview, setUpcomingPreview] = useState(null);
+  const [upcomingNote, setUpcomingNote] = useState("");
 
   // List pagination display limits (only show 5 at a time)
   const [reviewsLimit, setReviewsLimit] = useState(5);
   const [backlogLimit, setBacklogLimit] = useState(5);
 
   // Highlight Engine state
-  const [rects, setRects] = useState<Rect[]>([]);
-  const [uiState, setUiState] = useState<UIState>('IDLE');
-  const [imageUrl, setImageUrl] = useState<string | null>(null);
-  const [explanation, setExplanation] = useState<string | null>(null);
+  const [rects, setRects] = useState([]);
+  const [uiState, setUiState] = useState("IDLE");
+  const [imageUrl, setImageUrl] = useState(null);
+  const [explanation, setExplanation] = useState(null);
   const [mousePos, setMousePos] = useState({ x: -1000, y: -1000 });
-  const [selectionText, setSelectionText] = useState('');
+  const [selectionText, setSelectionText] = useState("");
 
   // Admin Hub Form States
-  const [currentMediaMode, setCurrentMediaMode] = useState<'playing' | 'watching'>('playing');
-  const [editPlaying, setEditPlaying] = useState<GameStatus>({ ...blogData.currentlyPlaying });
-  const [editWatching, setEditWatching] = useState<GameStatus>({ ...blogData.currentlyWatching });
-  const [newReview, setNewReview] = useState<{ title: string; gameTitle: string; rating: string; summary: string; paragraphs: string }>({
-    title: '', gameTitle: '', rating: '4.8/5', summary: '', paragraphs: ''
+  const [currentMediaMode, setCurrentMediaMode] = useState("playing");
+  const [editPlaying, setEditPlaying] = useState({
+    ...blogData.currentlyPlaying,
   });
-  const [newBacklog, setNewBacklog] = useState<{ title: string; platform: string; rating: string; status: 'Completed' | 'Playing' | 'Backlog' | 'Abandoned'; quickReview: string }>({
-    title: '', platform: '', rating: '4.5/5', status: 'Completed', quickReview: ''
+  const [editWatching, setEditWatching] = useState({
+    ...blogData.currentlyWatching,
   });
-  const [newVideo, setNewVideo] = useState<{ title: string; gameTitle: string; platform: string; duration: string; embedUrl: string; description: string }>({
-    title: '', gameTitle: '', platform: 'YouTube', duration: '10:00', embedUrl: '', description: ''
+  const [newReview, setNewReview] = useState({
+    title: "",
+    gameTitle: "",
+    rating: "4.8/5",
+    summary: "",
+    paragraphs: "",
+  });
+  const [newBacklog, setNewBacklog] = useState({
+    title: "",
+    platform: "",
+    rating: "4.5/5",
+    status: "Completed",
+    quickReview: "",
+  });
+  const [newVideo, setNewVideo] = useState({
+    title: "",
+    gameTitle: "",
+    platform: "YouTube",
+    duration: "10:00",
+    embedUrl: "",
+    description: "",
   });
 
   const uiStateRef = useRef(uiState);
@@ -664,14 +764,14 @@ export default function App() {
   selectionTextRef.current = selectionText;
 
   // Persist State Helper
-  const saveBlogData = (newData: BlogData) => {
+  const saveBlogData = (newData) => {
     setBlogData(newData);
-    localStorage.setItem('kool_aid_blog_data_v2', JSON.stringify(newData));
+    localStorage.setItem("kool_aid_blog_data_v2", JSON.stringify(newData));
   };
 
   // Sync programmatically cleansed blogData to localStorage on mount
   useEffect(() => {
-    localStorage.setItem('kool_aid_blog_data_v2', JSON.stringify(blogData));
+    localStorage.setItem("kool_aid_blog_data_v2", JSON.stringify(blogData));
   }, []);
 
   // Sync editPlaying form state
@@ -685,47 +785,48 @@ export default function App() {
   }, [blogData.currentlyWatching]);
 
   // Admin: Generate a custom game review on demand
-  const handleGenerateReview = async (e?: React.FormEvent) => {
+  const handleGenerateReview = async (e) => {
     if (e) e.preventDefault();
-    
     let queryToUse = userInput.trim();
     if (!queryToUse) return; // Do not randomize online searches
-    
-    let categoryToUse: 'game' | 'movie' | 'show' = searchCategory;
+    let categoryToUse = searchCategory;
 
     setIsGenerating(true);
     try {
-      const response = await fetch('/api/blog/search-game', {
-        method: 'POST',
-        headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({ query: queryToUse, category: categoryToUse })
+      const response = await fetch("/api/blog/search-game", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({ query: queryToUse, category: categoryToUse }),
       });
       const data = await response.json();
-      
       if (data.title) {
-        const newPost: BlogReview = {
-          id: 'gen_' + Date.now(),
+        const newPost = {
+          id: "gen_" + Date.now(),
           title: data.reviewTitle || `My Thoughts on ${data.title}`,
           gameTitle: data.title,
-          date: new Date().toLocaleDateString('en-US', { month: 'long', day: 'numeric', year: 'numeric' }),
-          rating: data.rating || '4.5/5',
+          date: new Date().toLocaleDateString("en-US", {
+            month: "long",
+            day: "numeric",
+            year: "numeric",
+          }),
+          rating: data.rating || "4.5/5",
           summary: data.reviewSummary || data.synopsis,
           paragraphs: data.reviewParagraphs || [data.synopsis],
           imageUrl: data.imageUrl || undefined,
-          category: data.category || 'game'
+          category: data.category || "game",
         };
 
         const updatedReviews = [newPost, ...blogData.reviews];
-        const updatedData: BlogData = {
+        const updatedData = {
           ...blogData,
-          reviews: updatedReviews
+          reviews: updatedReviews,
         };
 
         saveBlogData(updatedData);
 
         setSelectedReviewId(newPost.id);
-        setActiveSection('reviews');
-        setUserInput('');
+        setActiveSection("reviews");
+        setUserInput("");
       }
     } catch (err) {
       console.error("Failed to generate custom game review", err);
@@ -746,50 +847,48 @@ export default function App() {
   };
 
   // Search upcoming items via the Gemini endpoint
-  const handleSearchUpcoming = async (e?: React.FormEvent) => {
+  const handleSearchUpcoming = async (e) => {
     if (e) e.preventDefault();
     const queryToUse = upcomingQuery.trim();
     if (!queryToUse) return;
 
     setIsSearchingUpcoming(true);
     setUpcomingPreview(null);
-    setUpcomingNote('');
-    
-    let categoryToUse: 'game' | 'movie' | 'show' = 'game';
-    if (activeSection === 'upcoming-shows') categoryToUse = 'show';
-    else if (activeSection === 'upcoming-movies') categoryToUse = 'movie';
+    setUpcomingNote("");
+    let categoryToUse = "game";
+    if (activeSection === "upcoming-shows") categoryToUse = "show";
+    else if (activeSection === "upcoming-movies") categoryToUse = "movie";
 
     try {
-      const response = await fetch('/api/blog/search-game', {
-        method: 'POST',
-        headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({ query: queryToUse, category: categoryToUse })
+      const response = await fetch("/api/blog/search-game", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({ query: queryToUse, category: categoryToUse }),
       });
       const data = await response.json();
-      
       if (data.title) {
-        let parsedRT = '92%';
+        let parsedRT = "92%";
         if (data.rating) {
           const numMatch = data.rating.match(/([\d.]+)/);
           if (numMatch) {
             const val = parseFloat(numMatch[1]);
-            if (val <= 5) parsedRT = Math.round((val / 5) * 100) + '%';
-            else if (val <= 10) parsedRT = Math.round((val / 10) * 100) + '%';
-            else if (val <= 100) parsedRT = Math.round(val) + '%';
+            if (val <= 5) parsedRT = Math.round((val / 5) * 100) + "%";
+            else if (val <= 10) parsedRT = Math.round((val / 10) * 100) + "%";
+            else if (val <= 100) parsedRT = Math.round(val) + "%";
           }
         }
         setUpcomingPreview({
-          id: 'up_temp',
+          id: "up_temp",
           title: data.title,
           category: data.category || categoryToUse,
-          releaseYear: data.releaseYear || 'N/A',
-          genres: data.genres || 'N/A',
-          platforms: data.platforms || 'N/A',
-          synopsis: data.synopsis || 'N/A',
+          releaseYear: data.releaseYear || "N/A",
+          genres: data.genres || "N/A",
+          platforms: data.platforms || "N/A",
+          synopsis: data.synopsis || "N/A",
           imageUrl: data.imageUrl || undefined,
-          developer: data.developer || 'N/A',
-          hypeScore: data.rating || '9.0/10',
-          rottenTomatoes: parsedRT
+          developer: data.developer || "N/A",
+          hypeScore: data.rating || "9.0/10",
+          rottenTomatoes: parsedRT,
         });
       } else {
         alert("Could not find any results for that title. Try another search!");
@@ -806,8 +905,8 @@ export default function App() {
   const handleAddUpcomingItem = () => {
     if (!upcomingPreview) return;
 
-    const newItem: UpcomingItem = {
-      id: 'up_' + Date.now(),
+    const newItem = {
+      id: "up_" + Date.now(),
       title: upcomingPreview.title,
       category: upcomingPreview.category,
       releaseYear: upcomingPreview.releaseYear,
@@ -818,51 +917,57 @@ export default function App() {
       developer: upcomingPreview.developer,
       hypeScore: upcomingPreview.hypeScore,
       rottenTomatoes: upcomingPreview.rottenTomatoes,
-      notes: upcomingNote.trim() || undefined
+      notes: upcomingNote.trim() || undefined,
     };
 
-    let updated: BlogData;
-    if (activeSection === 'upcoming-games') {
+    let updated;
+    if (activeSection === "upcoming-games") {
       updated = {
         ...blogData,
-        upcomingGames: [newItem, ...(blogData.upcomingGames || [])]
+        upcomingGames: [newItem, ...(blogData.upcomingGames || [])],
       };
-    } else if (activeSection === 'upcoming-shows') {
+    } else if (activeSection === "upcoming-shows") {
       updated = {
         ...blogData,
-        upcomingShows: [newItem, ...(blogData.upcomingShows || [])]
+        upcomingShows: [newItem, ...(blogData.upcomingShows || [])],
       };
     } else {
       updated = {
         ...blogData,
-        upcomingMovies: [newItem, ...(blogData.upcomingMovies || [])]
+        upcomingMovies: [newItem, ...(blogData.upcomingMovies || [])],
       };
     }
 
     saveBlogData(updated);
     setUpcomingPreview(null);
-    setUpcomingQuery('');
-    setUpcomingNote('');
+    setUpcomingQuery("");
+    setUpcomingNote("");
   };
 
   // Delete upcoming item
-  const handleDeleteUpcomingItem = (id: string, cat: 'upcoming-games' | 'upcoming-shows' | 'upcoming-movies') => {
+  const handleDeleteUpcomingItem = (id, cat) => {
     if (!confirm("Remove this upcoming item?")) return;
-    let updated: BlogData;
-    if (cat === 'upcoming-games') {
+    let updated;
+    if (cat === "upcoming-games") {
       updated = {
         ...blogData,
-        upcomingGames: (blogData.upcomingGames || []).filter(item => item.id !== id)
+        upcomingGames: (blogData.upcomingGames || []).filter(
+          (item) => item.id !== id,
+        ),
       };
-    } else if (cat === 'upcoming-shows') {
+    } else if (cat === "upcoming-shows") {
       updated = {
         ...blogData,
-        upcomingShows: (blogData.upcomingShows || []).filter(item => item.id !== id)
+        upcomingShows: (blogData.upcomingShows || []).filter(
+          (item) => item.id !== id,
+        ),
       };
     } else {
       updated = {
         ...blogData,
-        upcomingMovies: (blogData.upcomingMovies || []).filter(item => item.id !== id)
+        upcomingMovies: (blogData.upcomingMovies || []).filter(
+          (item) => item.id !== id,
+        ),
       };
     }
     saveBlogData(updated);
@@ -872,19 +977,19 @@ export default function App() {
   const showTooltip = false;
 
   // Admin Event Handlers
-  const handleUpdateCurrentlyPlaying = async (e: React.FormEvent) => {
+  const handleUpdateCurrentlyPlaying = async (e) => {
     e.preventDefault();
     if (!editPlaying.title.trim()) return;
 
     setIsPinning(true);
     let finalTitle = editPlaying.title;
-    let finalImageUrl = editPlaying.imageUrl || '';
+    let finalImageUrl = editPlaying.imageUrl || "";
 
     try {
-      const response = await fetch('/api/blog/search-game', {
-        method: 'POST',
-        headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({ query: editPlaying.title, category: 'game' })
+      const response = await fetch("/api/blog/search-game", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({ query: editPlaying.title, category: "game" }),
       });
       const data = await response.json();
       if (data.title) {
@@ -897,31 +1002,33 @@ export default function App() {
       setIsPinning(false);
     }
 
-    const updated: BlogData = {
+    const updated = {
       ...blogData,
       currentlyPlaying: {
         ...editPlaying,
         title: finalTitle,
-        imageUrl: finalImageUrl
-      }
+        imageUrl: finalImageUrl,
+      },
     };
     saveBlogData(updated);
-    alert(`Successfully updated and verified currently playing game as "${finalTitle}"!`);
+    alert(
+      `Successfully updated and verified currently playing game as "${finalTitle}"!`,
+    );
   };
 
-  const handleUpdateCurrentlyWatching = async (e: React.FormEvent) => {
+  const handleUpdateCurrentlyWatching = async (e) => {
     e.preventDefault();
     if (!editWatching.title.trim()) return;
 
     setIsPinning(true);
     let finalTitle = editWatching.title;
-    let finalImageUrl = editWatching.imageUrl || '';
+    let finalImageUrl = editWatching.imageUrl || "";
 
     try {
-      const response = await fetch('/api/blog/search-game', {
-        method: 'POST',
-        headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({ query: editWatching.title, category: 'show' })
+      const response = await fetch("/api/blog/search-game", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({ query: editWatching.title, category: "show" }),
       });
       const data = await response.json();
       if (data.title) {
@@ -934,19 +1041,21 @@ export default function App() {
       setIsPinning(false);
     }
 
-    const updated: BlogData = {
+    const updated = {
       ...blogData,
       currentlyWatching: {
         ...editWatching,
         title: finalTitle,
-        imageUrl: finalImageUrl
-      }
+        imageUrl: finalImageUrl,
+      },
     };
     saveBlogData(updated);
-    alert(`Successfully updated and verified currently watching media as "${finalTitle}"!`);
+    alert(
+      `Successfully updated and verified currently watching media as "${finalTitle}"!`,
+    );
   };
 
-  const handleAddReview = async (e: React.FormEvent) => {
+  const handleAddReview = async (e) => {
     e.preventDefault();
     if (!newReview.title || !newReview.gameTitle) return;
 
@@ -954,20 +1063,24 @@ export default function App() {
     let finalGameTitle = newReview.gameTitle;
     let finalImageUrl = undefined;
     let finalSummary = newReview.summary;
-    let finalCategory: 'game' | 'movie' | 'show' = newReviewCategory;
+    let finalCategory = newReviewCategory;
 
     try {
-      const response = await fetch('/api/blog/search-game', {
-        method: 'POST',
-        headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({ query: newReview.gameTitle, category: newReviewCategory })
+      const response = await fetch("/api/blog/search-game", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({
+          query: newReview.gameTitle,
+          category: newReviewCategory,
+        }),
       });
       const data = await response.json();
       if (data.title) {
         finalGameTitle = data.title;
         finalImageUrl = data.imageUrl || undefined;
         finalCategory = data.category || newReviewCategory;
-        if (!finalSummary) finalSummary = data.reviewSummary || data.synopsis || '';
+        if (!finalSummary)
+          finalSummary = data.reviewSummary || data.synopsis || "";
       }
     } catch (err) {
       console.error("Auto-fetch failed during review submit:", err);
@@ -975,31 +1088,43 @@ export default function App() {
       setIsSubmittingReview(false);
     }
 
-    const reviewItem: BlogReview = {
-      id: 'rev_' + Date.now(),
+    const reviewItem = {
+      id: "rev_" + Date.now(),
       title: newReview.title,
       gameTitle: finalGameTitle,
-      date: new Date().toLocaleDateString('en-US', { month: 'long', day: 'numeric', year: 'numeric' }),
+      date: new Date().toLocaleDateString("en-US", {
+        month: "long",
+        day: "numeric",
+        year: "numeric",
+      }),
       rating: newReview.rating,
       summary: finalSummary || "A deep retro review essay.",
-      paragraphs: newReview.paragraphs.split('\n\n').filter(p => p.trim()),
+      paragraphs: newReview.paragraphs.split("\n\n").filter((p) => p.trim()),
       imageUrl: finalImageUrl,
-      category: finalCategory
+      category: finalCategory,
     };
 
-    const updated: BlogData = {
+    const updated = {
       ...blogData,
-      reviews: [reviewItem, ...blogData.reviews]
+      reviews: [reviewItem, ...blogData.reviews],
     };
     saveBlogData(updated);
 
-    setNewReview({ title: '', gameTitle: '', rating: '4.8/5', summary: '', paragraphs: '' });
+    setNewReview({
+      title: "",
+      gameTitle: "",
+      rating: "4.8/5",
+      summary: "",
+      paragraphs: "",
+    });
     setSelectedReviewId(reviewItem.id);
-    setActiveSection('reviews');
-    alert(`Successfully verified and added review essay for "${finalGameTitle}"!`);
+    setActiveSection("reviews");
+    alert(
+      `Successfully verified and added review essay for "${finalGameTitle}"!`,
+    );
   };
 
-  const handleAddBacklog = async (e: React.FormEvent) => {
+  const handleAddBacklog = async (e) => {
     e.preventDefault();
     if (!newBacklog.title || !newBacklog.platform) return;
 
@@ -1010,17 +1135,20 @@ export default function App() {
     let finalImageUrl = undefined;
 
     try {
-      const response = await fetch('/api/blog/search-game', {
-        method: 'POST',
-        headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({ query: newBacklog.title, category: 'game' })
+      const response = await fetch("/api/blog/search-game", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({ query: newBacklog.title, category: "game" }),
       });
       const data = await response.json();
       if (data.title) {
         finalTitle = data.title;
-        finalPlatform = data.platforms ? data.platforms.split(',')[0].trim() : finalPlatform;
+        finalPlatform = data.platforms
+          ? data.platforms.split(",")[0].trim()
+          : finalPlatform;
         finalImageUrl = data.imageUrl || undefined;
-        if (!finalQuickReview) finalQuickReview = data.reviewSummary || data.synopsis || '';
+        if (!finalQuickReview)
+          finalQuickReview = data.reviewSummary || data.synopsis || "";
       }
     } catch (err) {
       console.error("Auto-fetch failed during backlog submit:", err);
@@ -1028,71 +1156,86 @@ export default function App() {
       setIsSubmittingBacklog(false);
     }
 
-    const backlogItem: BacklogGame & { imageUrl?: string } = {
-      id: 'back_' + Date.now(),
+    const backlogItem = {
+      id: "back_" + Date.now(),
       title: finalTitle,
       platform: finalPlatform,
       rating: newBacklog.rating,
       status: newBacklog.status,
       quickReview: finalQuickReview || "Gameplay fully logged.",
-      imageUrl: finalImageUrl
+      imageUrl: finalImageUrl,
     };
 
-    const updated: BlogData = {
+    const updated = {
       ...blogData,
-      backlog: [backlogItem, ...blogData.backlog]
+      backlog: [backlogItem, ...blogData.backlog],
     };
     saveBlogData(updated);
 
-    setNewBacklog({ title: '', platform: '', rating: '4.5/5', status: 'Completed', quickReview: '' });
-    alert(`Successfully verified and logged previous gameplay for "${finalTitle}"!`);
+    setNewBacklog({
+      title: "",
+      platform: "",
+      rating: "4.5/5",
+      status: "Completed",
+      quickReview: "",
+    });
+    alert(
+      `Successfully verified and logged previous gameplay for "${finalTitle}"!`,
+    );
   };
 
-  const handleAddVideo = (e: React.FormEvent) => {
+  const handleAddVideo = (e) => {
     e.preventDefault();
     if (!newVideo.title || !newVideo.gameTitle) return;
 
-    const videoItem: VideoReview = {
-      id: 'vid_' + Date.now(),
+    const videoItem = {
+      id: "vid_" + Date.now(),
       title: newVideo.title,
       gameTitle: newVideo.gameTitle,
       platform: newVideo.platform,
       duration: newVideo.duration,
       embedUrl: newVideo.embedUrl,
-      description: newVideo.description
+      description: newVideo.description,
     };
 
-    const updated: BlogData = {
+    const updated = {
       ...blogData,
-      videos: [videoItem, ...blogData.videos]
+      videos: [videoItem, ...blogData.videos],
     };
     saveBlogData(updated);
-    setNewVideo({ title: '', gameTitle: '', platform: 'YouTube', duration: '10:00', embedUrl: '', description: '' });
+    setNewVideo({
+      title: "",
+      gameTitle: "",
+      platform: "YouTube",
+      duration: "10:00",
+      embedUrl: "",
+      description: "",
+    });
     alert("Added video review essay!");
   };
 
-  const handleDeleteReview = (id: string) => {
+  const handleDeleteReview = (id) => {
     if (!confirm("Delete this review?")) return;
-    const updated: BlogData = {
+    const updated = {
       ...blogData,
-      reviews: blogData.reviews.filter(r => r.id !== id)
+      reviews: blogData.reviews.filter((r) => r.id !== id),
     };
     saveBlogData(updated);
     if (selectedReviewId === id) setSelectedReviewId(null);
   };
 
-  const handleDeleteBacklog = (id: string) => {
-    const updated: BlogData = {
+  const handleDeleteBacklog = (id) => {
+    const updated = {
       ...blogData,
-      backlog: blogData.backlog.filter(b => b.id !== id)
+      backlog: blogData.backlog.filter((b) => b.id !== id),
     };
     saveBlogData(updated);
   };
 
-  const handleDeleteVideo = (id: string) => {
-    const updated: BlogData = {
+  const handleDeleteVideo = (id) => {
+    const updated = {
       ...blogData,
-      videos: blogData.videos.filter(v => v.id !== id)
+      videos: blogData.videos.filter((v) => v.id !== id),
     };
     saveBlogData(updated);
   };
@@ -1105,10 +1248,11 @@ export default function App() {
     }
   };
 
-  const getYoutubeEmbedUrl = (url: string) => {
+  const getYoutubeEmbedUrl = (url) => {
     if (!url) return "https://www.youtube.com/embed/dQw4w9WgXcQ";
     try {
-      let regExp = /^.*(youtu.be\/|v\/|u\/\w\/|embed\/|watch\?v=|\&v=)([^#\&\?]*).*/;
+      let regExp =
+        /^.*(youtu.be\/|v\/|u\/\w\/|embed\/|watch\?v=|\&v=)([^#\&\?]*).*/;
       let match = url.match(regExp);
       if (match && match[2].length === 11) {
         return `https://www.youtube.com/embed/${match[2]}`;
@@ -1119,16 +1263,15 @@ export default function App() {
 
   return (
     <div className="w-full min-h-screen bg-transparent text-stone-100 font-sans antialiased py-6 px-3 sm:px-4 md:px-6">
-      
       <div className="max-w-[900px] mx-auto bg-[#ce2029] border-4 border-stone-950 rounded-[2.5rem] p-5 sm:p-8 md:p-10 flex flex-col gap-8 shadow-[12px_12px_0px_0px_#09090b] relative overflow-hidden">
         {/* Shiny retro plastic-y gloss reflection across the cartridge/console box */}
         <div className="absolute top-0 left-0 right-0 h-4 bg-white/10 z-20 pointer-events-none" />
-        
+
         {/* 1. TOP HEADER BRAND - "LOUD COOL KID" */}
         <header className="flex flex-col gap-5 bg-[#FCF6E5] border-3 border-stone-950 p-5 rounded-3xl shadow-[6px_6px_0px_0px_#09090b] select-none text-stone-900 relative z-10">
           <div className="flex flex-col md:flex-row md:items-end justify-between gap-4">
             <div className="flex items-center justify-center md:justify-start gap-3 md:gap-4">
-              <KoolAidMascot 
+              <KoolAidMascot
                 className="w-12 h-12 md:w-16 md:h-16"
                 liquidColor={customMascot.liquidColor}
                 highlightColor={customMascot.highlightColor}
@@ -1136,17 +1279,19 @@ export default function App() {
                 handleColor={customMascot.handleColor}
                 handleShineColor={customMascot.handleShineColor}
               />
-              <h1 
+
+              <h1
                 className="text-2xl md:text-4xl font-pressstart font-bold tracking-wider uppercase transition-colors"
                 style={{
-                  color: '#FCF6E5', // Buttery warm cream-beige-white
-                  textShadow: '3px 3px 0px #09090b, -3px -3px 0px #09090b, 3px -3px 0px #09090b, -3px 3px 0px #09090b, 0px 3px 0px #09090b, 0px -3px 0px #09090b, 3px 0px 0px #09090b, -3px 0px 0px #09090b, 6px 6px 0px #ef4444',
+                  color: "#FCF6E5", // Buttery warm cream-beige-white
+                  textShadow:
+                    "3px 3px 0px #09090b, -3px -3px 0px #09090b, 3px -3px 0px #09090b, -3px 3px 0px #09090b, 0px 3px 0px #09090b, 0px -3px 0px #09090b, 3px 0px 0px #09090b, -3px 0px 0px #09090b, 6px 6px 0px #ef4444",
                 }}
               >
                 <ScrambleText text="KOOL-AIDE" />
               </h1>
             </div>
-            
+
             <div className="text-[10px] font-mono text-stone-500 uppercase tracking-widest text-center md:text-right mt-1 font-bold">
               EST. 2026 // 2D PIXEL JOURNAL
             </div>
@@ -1154,31 +1299,39 @@ export default function App() {
 
           {/* Interactive Mascot Color Mixer (2D Minimal Retro Bar) */}
           <div className="flex flex-wrap items-center justify-center md:justify-start gap-2 text-xs bg-white border-2 border-stone-950 p-3 rounded-xl shadow-[3px_3px_0px_0px_#09090b]">
-            <span className="font-pressstart text-[8px] text-stone-500 mr-2 uppercase tracking-tight">Mix Loud Kid Colors:</span>
+            <span className="font-pressstart text-[8px] text-stone-500 mr-2 uppercase tracking-tight">
+              Mix Loud Kid Colors:
+            </span>
             <div className="flex flex-wrap gap-2">
               {MASCOT_PRESETS.map((preset) => (
                 <button
                   key={preset.id}
                   onClick={() => handleSelectPreset(preset.id)}
                   className={`px-3 py-1.5 rounded-lg border-2 text-[9px] font-pressstart uppercase transition-all duration-150 cursor-pointer ${
-                    selectedPresetId === preset.id 
-                      ? 'border-stone-950 text-stone-950 bg-stone-100 shadow-[1px_1px_0px_0px_#000]' 
-                      : 'border-stone-200 text-stone-500 hover:text-stone-800 hover:bg-stone-50 bg-white'
+                    selectedPresetId === preset.id
+                      ? "border-stone-950 text-stone-950 bg-stone-100 shadow-[1px_1px_0px_0px_#000]"
+                      : "border-stone-200 text-stone-500 hover:text-stone-800 hover:bg-stone-50 bg-white"
                   }`}
                 >
-                  <span className="inline-block w-2.5 h-2.5 rounded-full mr-2 shadow-[1px_1px_0px_0px_rgba(0,0,0,0.2)]" style={{ backgroundColor: preset.liquid }} />
-                  {preset.name.split(' ')[0]}
+                  <span
+                    className="inline-block w-2.5 h-2.5 rounded-full mr-2 shadow-[1px_1px_0px_0px_rgba(0,0,0,0.2)]"
+                    style={{ backgroundColor: preset.liquid }}
+                  />
+                  {preset.name.split(" ")[0]}
                 </button>
               ))}
             </div>
           </div>
         </header>
-        
+
         {/* 2. DUAL MEDIA HERO SECTION ("WHAT I'M PLAYING & WATCHING") */}
         {(() => {
-          const activeItem = currentMediaMode === 'playing' ? blogData.currentlyPlaying : blogData.currentlyWatching;
+          const activeItem =
+            currentMediaMode === "playing"
+              ? blogData.currentlyPlaying
+              : blogData.currentlyWatching;
           const activeTheme = getGameTheme(activeItem.title);
-          const isPlaying = currentMediaMode === 'playing';
+          const isPlaying = currentMediaMode === "playing";
 
           return (
             <div className="flex flex-col gap-4">
@@ -1186,10 +1339,12 @@ export default function App() {
               <div className="flex justify-center md:justify-start">
                 <div className="relative flex items-center bg-stone-900 border-3 border-stone-950 rounded-2xl p-1 shadow-[4px_4px_0px_0px_rgba(0,0,0,1)] h-12 w-64 select-none">
                   {/* Left Half: Playing */}
-                  <button 
-                    onClick={() => setCurrentMediaMode('playing')}
+                  <button
+                    onClick={() => setCurrentMediaMode("playing")}
                     className={`flex-1 text-center font-mono text-[10px] font-black z-10 transition-colors cursor-pointer flex items-center justify-center gap-1.5 ${
-                      isPlaying ? 'text-white' : 'text-stone-500 hover:text-stone-300'
+                      isPlaying
+                        ? "text-white"
+                        : "text-stone-500 hover:text-stone-300"
                     }`}
                   >
                     <Gamepad2 className="w-4 h-4" />
@@ -1197,10 +1352,12 @@ export default function App() {
                   </button>
 
                   {/* Right Half: Watching */}
-                  <button 
-                    onClick={() => setCurrentMediaMode('watching')}
+                  <button
+                    onClick={() => setCurrentMediaMode("watching")}
                     className={`flex-1 text-center font-mono text-[10px] font-black z-10 transition-colors cursor-pointer flex items-center justify-center gap-1.5 ${
-                      !isPlaying ? 'text-white' : 'text-stone-500 hover:text-stone-300'
+                      !isPlaying
+                        ? "text-white"
+                        : "text-stone-500 hover:text-stone-300"
                     }`}
                   >
                     <Tv className="w-4 h-4" />
@@ -1216,9 +1373,9 @@ export default function App() {
                     animate={{ x: isPlaying ? 2 : 122 }}
                     onDragEnd={(event, info) => {
                       if (isPlaying && info.offset.x > 30) {
-                        setCurrentMediaMode('watching');
+                        setCurrentMediaMode("watching");
                       } else if (!isPlaying && info.offset.x < -30) {
-                        setCurrentMediaMode('playing');
+                        setCurrentMediaMode("playing");
                       }
                     }}
                     className="absolute left-1 w-28 h-8 rounded-xl bg-gradient-to-r from-red-500 to-amber-500 border-2 border-stone-950 flex items-center justify-center cursor-grab active:cursor-grabbing shadow-[2px_2px_0px_#000] z-20"
@@ -1235,10 +1392,10 @@ export default function App() {
               </div>
 
               {/* The Hero Display Board */}
-              <section 
+              <section
                 style={{
                   ...activeTheme.bgStyle,
-                  backgroundSize: '200% 200%',
+                  backgroundSize: "200% 200%",
                   borderColor: activeTheme.accentColorRaw,
                   boxShadow: `6px 6px 0px 0px ${activeTheme.accentColorRaw}`,
                 }}
@@ -1250,12 +1407,13 @@ export default function App() {
                 {/* Cover background with vivid gradients */}
                 {activeItem.imageUrl && (
                   <div className="absolute inset-0 z-0 overflow-hidden select-none pointer-events-none">
-                    <img 
-                      src={activeItem.imageUrl} 
-                      alt="Poster Background" 
+                    <img
+                      src={activeItem.imageUrl}
+                      alt="Poster Background"
                       referrerPolicy="no-referrer"
                       className="w-full h-full object-cover opacity-[0.68] filter saturate-[1.25] contrast-[1.05] transition-all duration-700 group-hover:scale-105 group-hover:translate-x-1 group-hover:translate-y-1 group-hover:opacity-[0.78]"
                     />
+
                     <div className="absolute inset-0 bg-gradient-to-r from-white/92 via-white/55 to-white/10" />
                   </div>
                 )}
@@ -1263,8 +1421,12 @@ export default function App() {
                 {/* Left: Text Details */}
                 <div className="relative z-10 flex-1 flex flex-col gap-3.5 w-full">
                   <div className="flex items-center gap-3">
-                    <div 
-                      style={{ borderColor: `${activeTheme.accentColorRaw}33`, color: activeTheme.accentColorRaw, backgroundColor: `${activeTheme.accentColorRaw}10` }}
+                    <div
+                      style={{
+                        borderColor: `${activeTheme.accentColorRaw}33`,
+                        color: activeTheme.accentColorRaw,
+                        backgroundColor: `${activeTheme.accentColorRaw}10`,
+                      }}
                       className="p-1.5 border rounded-lg shrink-0"
                     >
                       {isPlaying ? (
@@ -1275,12 +1437,25 @@ export default function App() {
                     </div>
                     <div>
                       <div className="flex items-center gap-2">
-                        <span className="text-[9px] font-mono uppercase tracking-widest font-black block" style={{ color: activeTheme.accentColorRaw }}>
-                          {isPlaying ? "CURRENTLY PLAYING" : "CURRENTLY WATCHING"}
+                        <span
+                          className="text-[9px] font-mono uppercase tracking-widest font-black block"
+                          style={{ color: activeTheme.accentColorRaw }}
+                        >
+                          {isPlaying
+                            ? "CURRENTLY PLAYING"
+                            : "CURRENTLY WATCHING"}
                         </span>
-                        <span className="w-1.5 h-1.5 rounded-full animate-ping" style={{ backgroundColor: activeTheme.accentColorRaw }} />
+                        <span
+                          className="w-1.5 h-1.5 rounded-full animate-ping"
+                          style={{
+                            backgroundColor: activeTheme.accentColorRaw,
+                          }}
+                        />
                       </div>
-                      <h2 style={{ color: activeTheme.accentColorRaw }} className={`font-black text-2xl md:text-3xl uppercase mt-0.5 tracking-tight ${activeTheme.headingFont}`}>
+                      <h2
+                        style={{ color: activeTheme.accentColorRaw }}
+                        className={`font-black text-2xl md:text-3xl uppercase mt-0.5 tracking-tight ${activeTheme.headingFont}`}
+                      >
                         {activeItem.title}
                       </h2>
                     </div>
@@ -1288,48 +1463,85 @@ export default function App() {
 
                   {/* Badges row */}
                   <div className="flex flex-wrap gap-x-4 gap-y-2 mt-1">
-                    <div 
+                    <div
                       className="flex items-center gap-2 font-mono text-[11px] border-b pb-0.5"
                       style={{ borderColor: `${activeTheme.accentColorRaw}22` }}
                     >
-                      <span className="font-bold opacity-75" style={{ color: activeTheme.accentColorRaw }}>
+                      <span
+                        className="font-bold opacity-75"
+                        style={{ color: activeTheme.accentColorRaw }}
+                      >
                         {isPlaying ? "PLATFORM:" : "STREAMING ON:"}
                       </span>
-                      <span className="font-bold tracking-wide uppercase" style={{ color: activeTheme.accentColorRaw }}>{activeItem.platform}</span>
+                      <span
+                        className="font-bold tracking-wide uppercase"
+                        style={{ color: activeTheme.accentColorRaw }}
+                      >
+                        {activeItem.platform}
+                      </span>
                     </div>
                     {activeItem.hours && (
-                      <div 
+                      <div
                         className="flex items-center gap-2 font-mono text-[11px] border-b pb-0.5"
-                        style={{ borderColor: `${activeTheme.accentColorRaw}22` }}
+                        style={{
+                          borderColor: `${activeTheme.accentColorRaw}22`,
+                        }}
                       >
-                        <span className="font-bold opacity-75" style={{ color: activeTheme.accentColorRaw }}>
+                        <span
+                          className="font-bold opacity-75"
+                          style={{ color: activeTheme.accentColorRaw }}
+                        >
                           {isPlaying ? "TIME INVESTED:" : "PROGRESS:"}
                         </span>
-                        <span className="font-bold tracking-wide uppercase" style={{ color: activeTheme.accentColorRaw }}>{activeItem.hours}</span>
+                        <span
+                          className="font-bold tracking-wide uppercase"
+                          style={{ color: activeTheme.accentColorRaw }}
+                        >
+                          {activeItem.hours}
+                        </span>
                       </div>
                     )}
                     {activeItem.rating && (
-                      <div 
+                      <div
                         className="flex items-center gap-2 font-mono text-[11px] border-b pb-0.5"
-                        style={{ borderColor: `${activeTheme.accentColorRaw}22` }}
+                        style={{
+                          borderColor: `${activeTheme.accentColorRaw}22`,
+                        }}
                       >
-                        <span className="font-bold opacity-75" style={{ color: activeTheme.accentColorRaw }}>SCORE:</span>
-                        <span className="font-bold tracking-wide uppercase" style={{ color: activeTheme.accentColorRaw }}>{activeItem.rating}</span>
+                        <span
+                          className="font-bold opacity-75"
+                          style={{ color: activeTheme.accentColorRaw }}
+                        >
+                          SCORE:
+                        </span>
+                        <span
+                          className="font-bold tracking-wide uppercase"
+                          style={{ color: activeTheme.accentColorRaw }}
+                        >
+                          {activeItem.rating}
+                        </span>
                       </div>
                     )}
-                    
-                    <span 
+
+                    <span
                       className="font-mono text-[9px] tracking-wider uppercase px-2 py-0.5 border rounded-full font-bold"
-                      style={{ borderColor: `${activeTheme.accentColorRaw}22`, color: activeTheme.accentColorRaw, backgroundColor: `${activeTheme.accentColorRaw}0d` }}
+                      style={{
+                        borderColor: `${activeTheme.accentColorRaw}22`,
+                        color: activeTheme.accentColorRaw,
+                        backgroundColor: `${activeTheme.accentColorRaw}0d`,
+                      }}
                     >
                       {activeTheme.themeName}
                     </span>
                   </div>
 
                   {activeItem.note && (
-                    <p 
+                    <p
                       className={`text-xs leading-relaxed max-w-xl select-text border-l-2 pl-3 mt-1 italic ${activeTheme.bodyFont}`}
-                      style={{ borderLeftColor: activeTheme.accentColorRaw, color: activeTheme.accentColorRaw }}
+                      style={{
+                        borderLeftColor: activeTheme.accentColorRaw,
+                        color: activeTheme.accentColorRaw,
+                      }}
                     >
                       "{activeItem.note}"
                     </p>
@@ -1338,15 +1550,15 @@ export default function App() {
 
                 {/* Right: Sharp Vertical Cover Poster */}
                 {activeItem.imageUrl && (
-                  <div 
+                  <div
                     className="relative z-10 shrink-0 w-28 sm:w-32 md:w-36 aspect-[2/3] overflow-hidden border-2 rounded-xl select-none bg-stone-100 self-center md:self-auto hover:rotate-1 hover:scale-102 transition-all duration-300"
                     style={{
                       borderColor: activeTheme.accentColorRaw,
-                      boxShadow: `4px 4px 0px 0px ${activeTheme.accentColorRaw}`
+                      boxShadow: `4px 4px 0px 0px ${activeTheme.accentColorRaw}`,
                     }}
                   >
-                    <img 
-                      src={activeItem.imageUrl} 
+                    <img
+                      src={activeItem.imageUrl}
                       alt={`${activeItem.title} cover`}
                       referrerPolicy="no-referrer"
                       className="w-full h-full object-cover filter saturate-[1.25] contrast-[1.05]"
@@ -1363,7 +1575,7 @@ export default function App() {
           {showAdmin && (
             <motion.div
               initial={{ opacity: 0, height: 0 }}
-              animate={{ opacity: 1, height: 'auto' }}
+              animate={{ opacity: 1, height: "auto" }}
               exit={{ opacity: 0, height: 0 }}
               className="bg-zinc-950 border-4 border-zinc-800 p-5 text-zinc-100 overflow-hidden font-sans shadow-[6px_6px_0px_0px_#EF4444]"
             >
@@ -1372,105 +1584,160 @@ export default function App() {
                   <Layers className="w-5 h-5 text-[#EF4444]" />
                   Control Desk
                 </h3>
-                <p className="text-xs text-zinc-400 mt-1">Manage reviews, logs, previously played games, or reset default data.</p>
+                <p className="text-xs text-zinc-400 mt-1">
+                  Manage reviews, logs, previously played games, or reset
+                  default data.
+                </p>
               </div>
 
               <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
-                
                 {/* Add review form */}
                 <div className="bg-zinc-900/40 p-4 border-2 border-zinc-800 flex flex-col gap-3">
-                  <span className="font-mono text-xs font-bold text-white uppercase block border-b border-zinc-800 pb-1.5">1. Write a Deep Review Essay</span>
-                  <form onSubmit={handleAddReview} className="flex flex-col gap-2">
-                    <input 
-                      placeholder="Article Title (e.g. Balatro: The Poker)" 
-                      value={newReview.title} 
-                      onChange={e => setNewReview({...newReview, title: e.target.value})}
+                  <span className="font-mono text-xs font-bold text-white uppercase block border-b border-zinc-800 pb-1.5">
+                    1. Write a Deep Review Essay
+                  </span>
+                  <form
+                    onSubmit={handleAddReview}
+                    className="flex flex-col gap-2"
+                  >
+                    <input
+                      placeholder="Article Title (e.g. Balatro: The Poker)"
+                      value={newReview.title}
+                      onChange={(e) =>
+                        setNewReview({ ...newReview, title: e.target.value })
+                      }
                       className="w-full text-xs font-mono p-1.5 border-2 border-zinc-800 bg-black text-white focus:outline-none focus:border-[#EF4444]"
                       required
                     />
+
                     <div className="grid grid-cols-3 gap-2">
-                      <input 
-                        placeholder="Title (e.g. Ted Lasso)" 
-                        value={newReview.gameTitle} 
-                        onChange={e => setNewReview({...newReview, gameTitle: e.target.value})}
+                      <input
+                        placeholder="Title (e.g. Ted Lasso)"
+                        value={newReview.gameTitle}
+                        onChange={(e) =>
+                          setNewReview({
+                            ...newReview,
+                            gameTitle: e.target.value,
+                          })
+                        }
                         className="col-span-1 text-xs font-mono p-1.5 border-2 border-zinc-800 bg-black text-white focus:outline-none focus:border-[#EF4444]"
                         required
                       />
+
                       <select
                         value={newReviewCategory}
-                        onChange={e => setNewReviewCategory(e.target.value as any)}
+                        onChange={(e) => setNewReviewCategory(e.target.value)}
                         className="col-span-1 text-xs font-mono p-1.5 border-2 border-zinc-800 bg-black text-white focus:outline-none focus:border-[#EF4444] cursor-pointer"
                       >
                         <option value="game">Game 🎮</option>
                         <option value="movie">Movie 🎬</option>
                         <option value="show">TV Show 📺</option>
                       </select>
-                      <input 
-                        placeholder="Score (e.g. 4.8/5)" 
-                        value={newReview.rating} 
-                        onChange={e => setNewReview({...newReview, rating: e.target.value})}
+                      <input
+                        placeholder="Score (e.g. 4.8/5)"
+                        value={newReview.rating}
+                        onChange={(e) =>
+                          setNewReview({ ...newReview, rating: e.target.value })
+                        }
                         className="col-span-1 text-xs font-mono p-1.5 border-2 border-zinc-800 bg-black text-white focus:outline-none focus:border-[#EF4444]"
                         required
                       />
                     </div>
-                    <input 
-                      placeholder="One Sentence Synopsis" 
-                      value={newReview.summary} 
-                      onChange={e => setNewReview({...newReview, summary: e.target.value})}
+                    <input
+                      placeholder="One Sentence Synopsis"
+                      value={newReview.summary}
+                      onChange={(e) =>
+                        setNewReview({ ...newReview, summary: e.target.value })
+                      }
                       className="w-full text-xs font-mono p-1.5 border-2 border-zinc-800 bg-black text-white focus:outline-none focus:border-[#EF4444]"
                     />
-                    <textarea 
-                      placeholder="Deep review paragraphs..." 
+
+                    <textarea
+                      placeholder="Deep review paragraphs..."
                       rows={4}
-                      value={newReview.paragraphs} 
-                      onChange={e => setNewReview({...newReview, paragraphs: e.target.value})}
+                      value={newReview.paragraphs}
+                      onChange={(e) =>
+                        setNewReview({
+                          ...newReview,
+                          paragraphs: e.target.value,
+                        })
+                      }
                       className="w-full text-xs font-mono p-1.5 border-2 border-zinc-800 bg-black text-white focus:outline-none focus:border-[#EF4444] resize-none"
                       required
                     />
-                    <button 
-                      type="submit" 
-                      disabled={isSubmittingReview || !newReview.gameTitle.trim()}
+
+                    <button
+                      type="submit"
+                      disabled={
+                        isSubmittingReview || !newReview.gameTitle.trim()
+                      }
                       className="w-full py-1.5 bg-[#EF4444] hover:bg-red-600 disabled:bg-zinc-800 disabled:text-zinc-600 text-white text-xs font-bold uppercase transition-colors cursor-pointer border-2 border-black shadow-[2px_2px_0px_#000] active:translate-x-[1px] active:translate-y-[1px] active:shadow-none flex items-center justify-center gap-1.5"
                     >
-                      {isSubmittingReview && <Loader2 className="w-3.5 h-3.5 animate-spin" />}
-                      {isSubmittingReview ? "Verifying & Fetching..." : "Publish Essay"}
+                      {isSubmittingReview && (
+                        <Loader2 className="w-3.5 h-3.5 animate-spin" />
+                      )}
+                      {isSubmittingReview
+                        ? "Verifying & Fetching..."
+                        : "Publish Essay"}
                     </button>
                     <p className="text-[10px] text-zinc-500 font-mono text-center select-none">
-                      Auto-corrects title & grabs cover artwork via OMDB/Game Brain on submit.
+                      Auto-corrects title & grabs cover artwork via OMDB/Game
+                      Brain on submit.
                     </p>
                   </form>
                 </div>
 
                 {/* Add previously played / backlog game form */}
                 <div className="bg-zinc-900/40 p-4 border-2 border-zinc-800 flex flex-col gap-3">
-                  <span className="font-mono text-xs font-bold text-white uppercase block border-b border-zinc-800 pb-1.5">2. Log Previously Played Game</span>
-                  <form onSubmit={handleAddBacklog} className="flex flex-col gap-2">
-                    <input 
-                      placeholder="Game Title (e.g. Cyberpunk 2077)" 
-                      value={newBacklog.title} 
-                      onChange={e => setNewBacklog({...newBacklog, title: e.target.value})}
+                  <span className="font-mono text-xs font-bold text-white uppercase block border-b border-zinc-800 pb-1.5">
+                    2. Log Previously Played Game
+                  </span>
+                  <form
+                    onSubmit={handleAddBacklog}
+                    className="flex flex-col gap-2"
+                  >
+                    <input
+                      placeholder="Game Title (e.g. Cyberpunk 2077)"
+                      value={newBacklog.title}
+                      onChange={(e) =>
+                        setNewBacklog({ ...newBacklog, title: e.target.value })
+                      }
                       className="w-full text-xs font-mono p-1.5 border-2 border-zinc-800 bg-black text-white focus:outline-none focus:border-[#EF4444]"
                       required
                     />
+
                     <div className="grid grid-cols-2 gap-2">
-                      <input 
-                        placeholder="Platform (e.g. PS5)" 
-                        value={newBacklog.platform} 
-                        onChange={e => setNewBacklog({...newBacklog, platform: e.target.value})}
+                      <input
+                        placeholder="Platform (e.g. PS5)"
+                        value={newBacklog.platform}
+                        onChange={(e) =>
+                          setNewBacklog({
+                            ...newBacklog,
+                            platform: e.target.value,
+                          })
+                        }
                         className="text-xs font-mono p-1.5 border-2 border-zinc-800 bg-black text-white focus:outline-none focus:border-[#EF4444]"
                         required
                       />
-                      <input 
-                        placeholder="Rating (e.g. 4.5/5)" 
-                        value={newBacklog.rating} 
-                        onChange={e => setNewBacklog({...newBacklog, rating: e.target.value})}
+
+                      <input
+                        placeholder="Rating (e.g. 4.5/5)"
+                        value={newBacklog.rating}
+                        onChange={(e) =>
+                          setNewBacklog({
+                            ...newBacklog,
+                            rating: e.target.value,
+                          })
+                        }
                         className="text-xs font-mono p-1.5 border-2 border-zinc-800 bg-black text-white focus:outline-none focus:border-[#EF4444]"
                         required
                       />
                     </div>
-                    <select 
-                      value={newBacklog.status} 
-                      onChange={e => setNewBacklog({...newBacklog, status: e.target.value as any})}
+                    <select
+                      value={newBacklog.status}
+                      onChange={(e) =>
+                        setNewBacklog({ ...newBacklog, status: e.target.value })
+                      }
                       className="w-full text-xs font-mono p-1.5 border-2 border-zinc-800 bg-black text-white focus:outline-none focus:border-[#EF4444]"
                     >
                       <option value="Completed">Completed</option>
@@ -1478,173 +1745,274 @@ export default function App() {
                       <option value="Backlog">Backlog</option>
                       <option value="Abandoned">Abandoned</option>
                     </select>
-                    <input 
-                      placeholder="Quick micro hot-take review..." 
-                      value={newBacklog.quickReview} 
-                      onChange={e => setNewBacklog({...newBacklog, quickReview: e.target.value})}
+                    <input
+                      placeholder="Quick micro hot-take review..."
+                      value={newBacklog.quickReview}
+                      onChange={(e) =>
+                        setNewBacklog({
+                          ...newBacklog,
+                          quickReview: e.target.value,
+                        })
+                      }
                       className="w-full text-xs font-mono p-1.5 border-2 border-zinc-800 bg-black text-white focus:outline-none focus:border-[#EF4444]"
                       required
                     />
-                    <button 
-                      type="submit" 
+
+                    <button
+                      type="submit"
                       disabled={isSubmittingBacklog || !newBacklog.title.trim()}
                       className="w-full py-1.5 bg-[#EF4444] hover:bg-red-600 disabled:bg-zinc-800 disabled:text-zinc-600 text-white text-xs font-bold uppercase transition-colors cursor-pointer border-2 border-black shadow-[2px_2px_0px_#000] active:translate-x-[1px] active:translate-y-[1px] active:shadow-none flex items-center justify-center gap-1.5"
                     >
-                      {isSubmittingBacklog && <Loader2 className="w-3.5 h-3.5 animate-spin" />}
-                      {isSubmittingBacklog ? "Verifying & Fetching..." : "Log Game Entry"}
+                      {isSubmittingBacklog && (
+                        <Loader2 className="w-3.5 h-3.5 animate-spin" />
+                      )}
+                      {isSubmittingBacklog
+                        ? "Verifying & Fetching..."
+                        : "Log Game Entry"}
                     </button>
                     <p className="text-[10px] text-zinc-500 font-mono text-center select-none">
-                      Auto-corrects game name & grabs cover artwork via live API on submit.
+                      Auto-corrects game name & grabs cover artwork via live API
+                      on submit.
                     </p>
                   </form>
                 </div>
 
                 {/* Update Playing & Watching Form */}
                 <div className="bg-zinc-900/40 p-4 border-2 border-zinc-800 flex flex-col gap-3">
-                  <span className="font-mono text-xs font-bold text-white uppercase block border-b border-zinc-800 pb-1.5">3. Update Active Media</span>
-                  
+                  <span className="font-mono text-xs font-bold text-white uppercase block border-b border-zinc-800 pb-1.5">
+                    3. Update Active Media
+                  </span>
+
                   {/* Small switcher inside admin for Playing vs Watching */}
                   <div className="flex gap-1 p-0.5 bg-black border border-zinc-800 rounded-lg">
                     <button
                       type="button"
-                      onClick={() => setCurrentMediaMode('playing')}
+                      onClick={() => setCurrentMediaMode("playing")}
                       className={`flex-1 text-center py-1 font-mono text-[9px] font-bold rounded ${
-                        currentMediaMode === 'playing' ? 'bg-[#EF4444] text-white' : 'text-zinc-500 hover:text-zinc-300'
+                        currentMediaMode === "playing"
+                          ? "bg-[#EF4444] text-white"
+                          : "text-zinc-500 hover:text-zinc-300"
                       }`}
                     >
                       🎮 PLAYING
                     </button>
                     <button
                       type="button"
-                      onClick={() => setCurrentMediaMode('watching')}
+                      onClick={() => setCurrentMediaMode("watching")}
                       className={`flex-1 text-center py-1 font-mono text-[9px] font-bold rounded ${
-                        currentMediaMode === 'watching' ? 'bg-[#EF4444] text-white' : 'text-zinc-500 hover:text-zinc-300'
+                        currentMediaMode === "watching"
+                          ? "bg-[#EF4444] text-white"
+                          : "text-zinc-500 hover:text-zinc-300"
                       }`}
                     >
                       📺 WATCHING
                     </button>
                   </div>
 
-                  {currentMediaMode === 'playing' ? (
-                    <form onSubmit={handleUpdateCurrentlyPlaying} className="flex flex-col gap-2">
-                      <input 
-                        placeholder="Game Title (e.g. Final Fantasy VII Remake)" 
-                        value={editPlaying.title} 
-                        onChange={e => setEditPlaying({...editPlaying, title: e.target.value})}
+                  {currentMediaMode === "playing" ? (
+                    <form
+                      onSubmit={handleUpdateCurrentlyPlaying}
+                      className="flex flex-col gap-2"
+                    >
+                      <input
+                        placeholder="Game Title (e.g. Final Fantasy VII Remake)"
+                        value={editPlaying.title}
+                        onChange={(e) =>
+                          setEditPlaying({
+                            ...editPlaying,
+                            title: e.target.value,
+                          })
+                        }
                         className="w-full text-xs font-mono p-1.5 border-2 border-zinc-800 bg-black text-white focus:outline-none focus:border-[#EF4444]"
                         required
                       />
+
                       <div className="grid grid-cols-2 gap-2">
-                        <input 
-                          placeholder="Platform (e.g. PS5)" 
-                          value={editPlaying.platform} 
-                          onChange={e => setEditPlaying({...editPlaying, platform: e.target.value})}
+                        <input
+                          placeholder="Platform (e.g. PS5)"
+                          value={editPlaying.platform}
+                          onChange={(e) =>
+                            setEditPlaying({
+                              ...editPlaying,
+                              platform: e.target.value,
+                            })
+                          }
                           className="text-xs font-mono p-1.5 border-2 border-zinc-800 bg-black text-white focus:outline-none focus:border-[#EF4444]"
                           required
                         />
-                        <input 
-                          placeholder="Rating (e.g. 4.8/5)" 
-                          value={editPlaying.rating || ''} 
-                          onChange={e => setEditPlaying({...editPlaying, rating: e.target.value})}
+
+                        <input
+                          placeholder="Rating (e.g. 4.8/5)"
+                          value={editPlaying.rating || ""}
+                          onChange={(e) =>
+                            setEditPlaying({
+                              ...editPlaying,
+                              rating: e.target.value,
+                            })
+                          }
                           className="text-xs font-mono p-1.5 border-2 border-zinc-800 bg-black text-white focus:outline-none focus:border-[#EF4444]"
                           required
                         />
                       </div>
                       <div className="grid grid-cols-2 gap-2">
-                        <input 
-                          placeholder="Hours (e.g. 45 hrs)" 
-                          value={editPlaying.hours || ''} 
-                          onChange={e => setEditPlaying({...editPlaying, hours: e.target.value})}
+                        <input
+                          placeholder="Hours (e.g. 45 hrs)"
+                          value={editPlaying.hours || ""}
+                          onChange={(e) =>
+                            setEditPlaying({
+                              ...editPlaying,
+                              hours: e.target.value,
+                            })
+                          }
                           className="text-xs font-mono p-1.5 border-2 border-zinc-800 bg-black text-white focus:outline-none focus:border-[#EF4444]"
                         />
-                        <input 
-                          placeholder="Image URL (Optional)" 
-                          value={editPlaying.imageUrl || ''} 
-                          onChange={e => setEditPlaying({...editPlaying, imageUrl: e.target.value})}
+
+                        <input
+                          placeholder="Image URL (Optional)"
+                          value={editPlaying.imageUrl || ""}
+                          onChange={(e) =>
+                            setEditPlaying({
+                              ...editPlaying,
+                              imageUrl: e.target.value,
+                            })
+                          }
                           className="text-xs font-mono p-1.5 border-2 border-zinc-800 bg-black text-white focus:outline-none focus:border-[#EF4444]"
                         />
                       </div>
-                      <input 
-                        placeholder="A short hot-take note..." 
-                        value={editPlaying.note || ''} 
-                        onChange={e => setEditPlaying({...editPlaying, note: e.target.value})}
+                      <input
+                        placeholder="A short hot-take note..."
+                        value={editPlaying.note || ""}
+                        onChange={(e) =>
+                          setEditPlaying({
+                            ...editPlaying,
+                            note: e.target.value,
+                          })
+                        }
                         className="w-full text-xs font-mono p-1.5 border-2 border-zinc-800 bg-black text-white focus:outline-none focus:border-[#EF4444]"
                       />
-                      <button 
-                        type="submit" 
+
+                      <button
+                        type="submit"
                         disabled={isPinning || !editPlaying.title.trim()}
                         className="w-full py-1.5 bg-[#EF4444] hover:bg-red-600 disabled:bg-zinc-800 disabled:text-zinc-600 text-white text-xs font-mono font-bold uppercase tracking-wider transition-colors cursor-pointer flex items-center justify-center gap-2 border-2 border-black shadow-[2px_2px_0px_#000]"
                       >
-                        {isPinning && <Loader2 className="w-3.5 h-3.5 animate-spin" />}
-                        {isPinning ? "Verifying Title & Cover..." : "Update Playing"}
+                        {isPinning && (
+                          <Loader2 className="w-3.5 h-3.5 animate-spin" />
+                        )}
+                        {isPinning
+                          ? "Verifying Title & Cover..."
+                          : "Update Playing"}
                       </button>
                     </form>
                   ) : (
-                    <form onSubmit={handleUpdateCurrentlyWatching} className="flex flex-col gap-2">
-                      <input 
-                        placeholder="Movie or Show Title (e.g. Severance)" 
-                        value={editWatching.title} 
-                        onChange={e => setEditWatching({...editWatching, title: e.target.value})}
+                    <form
+                      onSubmit={handleUpdateCurrentlyWatching}
+                      className="flex flex-col gap-2"
+                    >
+                      <input
+                        placeholder="Movie or Show Title (e.g. Severance)"
+                        value={editWatching.title}
+                        onChange={(e) =>
+                          setEditWatching({
+                            ...editWatching,
+                            title: e.target.value,
+                          })
+                        }
                         className="w-full text-xs font-mono p-1.5 border-2 border-zinc-800 bg-black text-white focus:outline-none focus:border-[#EF4444]"
                         required
                       />
+
                       <div className="grid grid-cols-2 gap-2">
-                        <input 
-                          placeholder="Platform (e.g. Apple TV+)" 
-                          value={editWatching.platform} 
-                          onChange={e => setEditWatching({...editWatching, platform: e.target.value})}
+                        <input
+                          placeholder="Platform (e.g. Apple TV+)"
+                          value={editWatching.platform}
+                          onChange={(e) =>
+                            setEditWatching({
+                              ...editWatching,
+                              platform: e.target.value,
+                            })
+                          }
                           className="text-xs font-mono p-1.5 border-2 border-zinc-800 bg-black text-white focus:outline-none focus:border-[#EF4444]"
                           required
                         />
-                        <input 
-                          placeholder="Rating (e.g. 9.0/10)" 
-                          value={editWatching.rating || ''} 
-                          onChange={e => setEditWatching({...editWatching, rating: e.target.value})}
+
+                        <input
+                          placeholder="Rating (e.g. 9.0/10)"
+                          value={editWatching.rating || ""}
+                          onChange={(e) =>
+                            setEditWatching({
+                              ...editWatching,
+                              rating: e.target.value,
+                            })
+                          }
                           className="text-xs font-mono p-1.5 border-2 border-zinc-800 bg-black text-white focus:outline-none focus:border-[#EF4444]"
                           required
                         />
                       </div>
                       <div className="grid grid-cols-2 gap-2">
-                        <input 
-                          placeholder="Episodes/Progress (e.g. S2 Ep4)" 
-                          value={editWatching.hours || ''} 
-                          onChange={e => setEditWatching({...editWatching, hours: e.target.value})}
+                        <input
+                          placeholder="Episodes/Progress (e.g. S2 Ep4)"
+                          value={editWatching.hours || ""}
+                          onChange={(e) =>
+                            setEditWatching({
+                              ...editWatching,
+                              hours: e.target.value,
+                            })
+                          }
                           className="text-xs font-mono p-1.5 border-2 border-zinc-800 bg-black text-white focus:outline-none focus:border-[#EF4444]"
                         />
-                        <input 
-                          placeholder="Image URL (Optional)" 
-                          value={editWatching.imageUrl || ''} 
-                          onChange={e => setEditWatching({...editWatching, imageUrl: e.target.value})}
+
+                        <input
+                          placeholder="Image URL (Optional)"
+                          value={editWatching.imageUrl || ""}
+                          onChange={(e) =>
+                            setEditWatching({
+                              ...editWatching,
+                              imageUrl: e.target.value,
+                            })
+                          }
                           className="text-xs font-mono p-1.5 border-2 border-zinc-800 bg-black text-white focus:outline-none focus:border-[#EF4444]"
                         />
                       </div>
-                      <input 
-                        placeholder="A short review snippet..." 
-                        value={editWatching.note || ''} 
-                        onChange={e => setEditWatching({...editWatching, note: e.target.value})}
+                      <input
+                        placeholder="A short review snippet..."
+                        value={editWatching.note || ""}
+                        onChange={(e) =>
+                          setEditWatching({
+                            ...editWatching,
+                            note: e.target.value,
+                          })
+                        }
                         className="w-full text-xs font-mono p-1.5 border-2 border-zinc-800 bg-black text-white focus:outline-none focus:border-[#EF4444]"
                       />
-                      <button 
-                        type="submit" 
+
+                      <button
+                        type="submit"
                         disabled={isPinning || !editWatching.title.trim()}
                         className="w-full py-1.5 bg-[#EF4444] hover:bg-red-600 disabled:bg-zinc-800 disabled:text-zinc-600 text-white text-xs font-mono font-bold uppercase tracking-wider transition-colors cursor-pointer flex items-center justify-center gap-2 border-2 border-black shadow-[2px_2px_0px_#000]"
                       >
-                        {isPinning && <Loader2 className="w-3.5 h-3.5 animate-spin" />}
-                        {isPinning ? "Verifying Title & Poster..." : "Update Watching"}
+                        {isPinning && (
+                          <Loader2 className="w-3.5 h-3.5 animate-spin" />
+                        )}
+                        {isPinning
+                          ? "Verifying Title & Poster..."
+                          : "Update Watching"}
                       </button>
                     </form>
                   )}
                   <p className="text-[10px] text-zinc-500 font-mono text-center select-none">
-                    Queries live API to correct title/game name and download official high-res poster artwork.
+                    Queries live API to correct title/game name and download
+                    official high-res poster artwork.
                   </p>
                 </div>
-
               </div>
 
               {/* Reset defaults button */}
               <div className="border-t-2 border-zinc-800 mt-4 pt-3 flex justify-between items-center">
-                <span className="text-[10px] font-mono text-zinc-500 font-bold">SYSTEM STABLE // LOCAL PREVIEW</span>
-                <button 
+                <span className="text-[10px] font-mono text-zinc-500 font-bold">
+                  SYSTEM STABLE // LOCAL PREVIEW
+                </span>
+                <button
                   onClick={handleResetData}
                   className="px-3 py-1 border-2 border-zinc-800 text-red-400 hover:bg-zinc-900 font-mono text-[10px] font-bold rounded cursor-pointer transition-colors shadow-[2px_2px_0px_#000] active:translate-x-[1px] active:translate-y-[1px] active:shadow-none"
                 >
@@ -1656,11 +2024,11 @@ export default function App() {
         </AnimatePresence>
 
         {/* DONE REVIEWS REGULAR SEARCH FORM (PLACED ABOVE NAVIGATION TABS) */}
-        <form 
+        <form
           onSubmit={(e) => {
             e.preventDefault();
             setAppliedSearchQuery(reviewsSearchQuery);
-            setActiveSection('reviews');
+            setActiveSection("reviews");
             setSelectedReviewId(null);
           }}
           className="flex flex-col sm:flex-row gap-3 items-center w-full bg-stone-900 border-3 border-stone-950 rounded-3xl p-4 shadow-[6px_6px_0px_0px_#09090b]"
@@ -1668,10 +2036,10 @@ export default function App() {
           <div className="relative flex-1 w-full flex items-center gap-2">
             <div className="relative flex-1 group">
               <Search className="absolute left-3.5 top-3.5 w-4 h-4 text-stone-500 transition-colors duration-300 group-hover:text-[#ef4444] group-focus-within:text-[#ef4444] pointer-events-none z-10" />
-              <input 
-                placeholder="Search done reviews by title, content, or genre..." 
+              <input
+                placeholder="Search done reviews by title, content, or genre..."
                 value={reviewsSearchQuery}
-                onChange={e => setReviewsSearchQuery(e.target.value)}
+                onChange={(e) => setReviewsSearchQuery(e.target.value)}
                 className="w-full text-xs font-mono pl-10 pr-4 py-3 bg-white border-2 border-stone-300 rounded-xl text-stone-900 placeholder-stone-500 focus:outline-none focus:ring-0 transition-all duration-150 hover:bg-stone-50 hover:border-stone-400 focus:bg-white focus:border-[#ef4444]"
               />
             </div>
@@ -1681,22 +2049,24 @@ export default function App() {
               <button
                 type="button"
                 onClick={() => setIsFilterDropdownOpen(!isFilterDropdownOpen)}
-                className={`p-3 border-2 rounded-xl cursor-pointer transition-all flex items-center justify-center bg-white border-stone-300 hover:border-stone-450 ${isFilterDropdownOpen ? 'text-[#ef4444] border-[#ef4444] bg-red-50' : 'text-stone-700 hover:text-stone-900'} active:translate-x-[1px] active:translate-y-[1px]`}
+                className={`p-3 border-2 rounded-xl cursor-pointer transition-all flex items-center justify-center bg-white border-stone-300 hover:border-stone-450 ${isFilterDropdownOpen ? "text-[#ef4444] border-[#ef4444] bg-red-50" : "text-stone-700 hover:text-stone-900"} active:translate-x-[1px] active:translate-y-[1px]`}
                 title="Filters"
               >
                 <MoreVertical className="w-4 h-4" />
               </button>
-              
+
               {/* Dropdown Menu */}
               {isFilterDropdownOpen && (
                 <div className="absolute right-0 mt-2 w-48 bg-white border-3 border-stone-950 rounded-2xl shadow-[6px_6px_0px_0px_#09090b] p-3.5 z-30 flex flex-col gap-2">
-                  <span className="font-pressstart text-[7px] text-stone-400 uppercase tracking-wider block border-b border-stone-200 pb-1.5 mb-1 select-none">Filter By:</span>
+                  <span className="font-pressstart text-[7px] text-stone-400 uppercase tracking-wider block border-b border-stone-200 pb-1.5 mb-1 select-none">
+                    Filter By:
+                  </span>
                   {[
-                    { id: 'game', label: 'Games 🎮' },
-                    { id: 'movie', label: 'Movies 🎬' },
-                    { id: 'show', label: 'TV Shows 📺' }
-                  ].map(category => {
-                    const isChecked = selectedFilters.includes(category.id as any);
+                    { id: "game", label: "Games 🎮" },
+                    { id: "movie", label: "Movies 🎬" },
+                    { id: "show", label: "TV Shows 📺" },
+                  ].map((category) => {
+                    const isChecked = selectedFilters.includes(category.id);
                     return (
                       <label
                         key={category.id}
@@ -1707,13 +2077,21 @@ export default function App() {
                           checked={isChecked}
                           onChange={() => {
                             if (isChecked) {
-                              setSelectedFilters(selectedFilters.filter(f => f !== category.id));
+                              setSelectedFilters(
+                                selectedFilters.filter(
+                                  (f) => f !== category.id,
+                                ),
+                              );
                             } else {
-                              setSelectedFilters([...selectedFilters, category.id as any]);
+                              setSelectedFilters([
+                                ...selectedFilters,
+                                category.id,
+                              ]);
                             }
                           }}
                           className="rounded border-stone-300 text-red-600 bg-white focus:ring-0 cursor-pointer accent-red-600 w-3.5 h-3.5"
                         />
+
                         {category.label}
                       </label>
                     );
@@ -1735,8 +2113,8 @@ export default function App() {
               <button
                 type="button"
                 onClick={() => {
-                  setReviewsSearchQuery('');
-                  setAppliedSearchQuery('');
+                  setReviewsSearchQuery("");
+                  setAppliedSearchQuery("");
                 }}
                 className="px-4 py-3 border-3 text-[10px] font-pressstart uppercase tracking-wider rounded-xl transition-all cursor-pointer bg-white border-stone-950 text-stone-900 shadow-[4px_4px_0px_0px_#09090b] hover:bg-stone-100"
               >
@@ -1748,7 +2126,7 @@ export default function App() {
               type="button"
               onClick={() => {
                 handleRandomDoneReview();
-                setActiveSection('reviews');
+                setActiveSection("reviews");
               }}
               className="flex-1 sm:flex-none px-5 py-3 border-3 text-[10px] font-pressstart uppercase tracking-wider rounded-xl shrink-0 transition-all cursor-pointer flex items-center justify-center gap-2 active:translate-x-[2px] active:translate-y-[2px] active:shadow-none bg-[#FCF6E5] border-stone-950 text-stone-900 shadow-[4px_4px_0px_0px_#09090b] hover:border-blue-600 hover:shadow-[4px_4px_0px_0px_#2563eb]"
             >
@@ -1760,60 +2138,84 @@ export default function App() {
         {/* 3. CLEAN SECTIONS NAVIGATION TABS (STYLISH 2D COZY RETRO TABS) */}
         <nav className="flex select-none flex-wrap md:flex-nowrap gap-3.5 text-sm mt-4 overflow-x-auto pb-2">
           <button
-            onClick={() => { setActiveSection('reviews'); setSelectedReviewId(null); }}
+            onClick={() => {
+              setActiveSection("reviews");
+              setSelectedReviewId(null);
+            }}
             style={{
-              backgroundColor: activeSection === 'reviews' ? customMascot.liquidColor : '#1c1917',
-              borderColor: '#09090b',
+              backgroundColor:
+                activeSection === "reviews"
+                  ? customMascot.liquidColor
+                  : "#1c1917",
+              borderColor: "#09090b",
             }}
             className={`px-4 py-3.5 font-display font-black text-[10px] uppercase tracking-wider border-3 rounded-2xl transition-all cursor-pointer shadow-[4px_4px_0px_0px_#000] active:translate-x-[1px] active:translate-y-[1px] active:shadow-none flex items-center gap-1.5 shrink-0 ${
-              activeSection === 'reviews' 
-                ? 'text-white' 
-                : 'text-stone-300 hover:text-white hover:bg-stone-800'
+              activeSection === "reviews"
+                ? "text-white"
+                : "text-stone-300 hover:text-white hover:bg-stone-800"
             }`}
           >
             📚 Done Reviews ({blogData.reviews.length})
           </button>
-          
+
           <button
-            onClick={() => { setActiveSection('upcoming-games'); setSelectedReviewId(null); }}
+            onClick={() => {
+              setActiveSection("upcoming-games");
+              setSelectedReviewId(null);
+            }}
             style={{
-              backgroundColor: activeSection === 'upcoming-games' ? customMascot.liquidColor : '#1c1917',
-              borderColor: '#09090b',
+              backgroundColor:
+                activeSection === "upcoming-games"
+                  ? customMascot.liquidColor
+                  : "#1c1917",
+              borderColor: "#09090b",
             }}
             className={`px-4 py-3.5 font-display font-black text-[10px] uppercase tracking-wider border-3 rounded-2xl transition-all cursor-pointer shadow-[4px_4px_0px_0px_#000] active:translate-x-[1px] active:translate-y-[1px] active:shadow-none flex items-center gap-1.5 shrink-0 ${
-              activeSection === 'upcoming-games' 
-                ? 'text-white' 
-                : 'text-stone-300 hover:text-white hover:bg-stone-800'
+              activeSection === "upcoming-games"
+                ? "text-white"
+                : "text-stone-300 hover:text-white hover:bg-stone-800"
             }`}
           >
             🎮 Upcoming Games ({(blogData.upcomingGames || []).length})
           </button>
 
           <button
-            onClick={() => { setActiveSection('upcoming-shows'); setSelectedReviewId(null); }}
+            onClick={() => {
+              setActiveSection("upcoming-shows");
+              setSelectedReviewId(null);
+            }}
             style={{
-              backgroundColor: activeSection === 'upcoming-shows' ? customMascot.liquidColor : '#1c1917',
-              borderColor: '#09090b',
+              backgroundColor:
+                activeSection === "upcoming-shows"
+                  ? customMascot.liquidColor
+                  : "#1c1917",
+              borderColor: "#09090b",
             }}
             className={`px-4 py-3.5 font-display font-black text-[10px] uppercase tracking-wider border-3 rounded-2xl transition-all cursor-pointer shadow-[4px_4px_0px_0px_#000] active:translate-x-[1px] active:translate-y-[1px] active:shadow-none flex items-center gap-1.5 shrink-0 ${
-              activeSection === 'upcoming-shows' 
-                ? 'text-white' 
-                : 'text-stone-300 hover:text-white hover:bg-stone-800'
+              activeSection === "upcoming-shows"
+                ? "text-white"
+                : "text-stone-300 hover:text-white hover:bg-stone-800"
             }`}
           >
             📺 Upcoming Shows ({(blogData.upcomingShows || []).length})
           </button>
 
           <button
-            onClick={() => { setActiveSection('upcoming-movies'); setSelectedReviewId(null); }}
+            onClick={() => {
+              setActiveSection("upcoming-movies");
+              setSelectedReviewId(null);
+            }}
             style={{
-              backgroundColor: activeSection === 'upcoming-movies' ? customMascot.liquidColor : '#1c1917',
-              borderColor: '#09090b',
+              backgroundColor:
+                activeSection === "upcoming-movies"
+                  ? customMascot.liquidColor
+                  : "#1c1917",
+              borderColor: "#09090b",
             }}
             className={`px-4 py-3.5 font-display font-black text-[10px] uppercase tracking-wider border-3 rounded-2xl transition-all cursor-pointer shadow-[4px_4px_0px_0px_#000] active:translate-x-[1px] active:translate-y-[1px] active:shadow-none flex items-center gap-1.5 shrink-0 ${
-              activeSection === 'upcoming-movies' 
-                ? 'text-white' 
-                : 'text-stone-300 hover:text-white hover:bg-stone-800'
+              activeSection === "upcoming-movies"
+                ? "text-white"
+                : "text-stone-300 hover:text-white hover:bg-stone-800"
             }`}
           >
             🎬 Upcoming Movies ({(blogData.upcomingMovies || []).length})
@@ -1822,14 +2224,11 @@ export default function App() {
 
         {/* 4. MAIN INTERACTIVE CONTENT FEED */}
         <main className="min-h-[400px]">
-          
           {/* SECTION A: JOE'S REVIEWS */}
-          {activeSection === 'reviews' && (
+          {activeSection === "reviews" && (
             <div className="flex flex-col gap-6">
-              
               <AnimatePresence mode="wait">
                 {!selectedReviewId ? (
-                  
                   /* REVIEWS LIST VIEWS (CLEAN PUBLICATION GRID) */
                   <motion.div
                     key="list"
@@ -1848,11 +2247,13 @@ export default function App() {
                           <div className="relative w-full flex items-center gap-2">
                             <div className="relative flex-1 group">
                               <Search className="absolute left-3.5 top-3.5 w-4 h-4 text-stone-500 transition-colors duration-300 group-hover:text-[#ef4444] group-focus-within:text-[#ef4444] pointer-events-none z-10" />
-                              <input 
-                                placeholder="Write a game, movie, or show title to write an AI review essay..." 
+                              <input
+                                placeholder="Write a game, movie, or show title to write an AI review essay..."
                                 value={userInput}
-                                onChange={e => setUserInput(e.target.value)}
-                                onKeyDown={e => e.key === 'Enter' && handleGenerateReview()}
+                                onChange={(e) => setUserInput(e.target.value)}
+                                onKeyDown={(e) =>
+                                  e.key === "Enter" && handleGenerateReview()
+                                }
                                 className="w-full text-xs font-mono pl-10 pr-4 py-3 bg-white border-2 border-stone-300 rounded-xl text-stone-900 placeholder-stone-500 focus:outline-none focus:ring-0 transition-all duration-150 hover:bg-stone-50 hover:border-stone-400 focus:bg-white focus:border-[#ef4444]"
                               />
                             </div>
@@ -1879,17 +2280,33 @@ export default function App() {
                     {/* Done Reviews List Container */}
 
                     {(() => {
-                      const filteredReviews = blogData.reviews.filter(rev => {
-                        if (selectedFilters.length > 0 && !selectedFilters.includes(rev.category || 'game')) {
+                      const filteredReviews = blogData.reviews.filter((rev) => {
+                        if (
+                          selectedFilters.length > 0 &&
+                          !selectedFilters.includes(rev.category || "game")
+                        ) {
                           return false;
                         }
                         if (appliedSearchQuery.trim()) {
                           const q = appliedSearchQuery.toLowerCase();
-                          const matchesTitle = rev.title?.toLowerCase().includes(q);
-                          const matchesGameTitle = rev.gameTitle?.toLowerCase().includes(q);
-                          const matchesSummary = rev.summary?.toLowerCase().includes(q);
-                          const matchesPara = rev.paragraphs?.some(p => p.toLowerCase().includes(q));
-                          return matchesTitle || matchesGameTitle || matchesSummary || matchesPara;
+                          const matchesTitle = rev.title
+                            ?.toLowerCase()
+                            .includes(q);
+                          const matchesGameTitle = rev.gameTitle
+                            ?.toLowerCase()
+                            .includes(q);
+                          const matchesSummary = rev.summary
+                            ?.toLowerCase()
+                            .includes(q);
+                          const matchesPara = rev.paragraphs?.some((p) =>
+                            p.toLowerCase().includes(q),
+                          );
+                          return (
+                            matchesTitle ||
+                            matchesGameTitle ||
+                            matchesSummary ||
+                            matchesPara
+                          );
                         }
                         return true;
                       });
@@ -1897,142 +2314,191 @@ export default function App() {
                       if (filteredReviews.length === 0) {
                         return (
                           <div className="bg-stone-950/40 border border-stone-800 rounded-3xl p-12 text-center shadow-sm select-none">
-                            <span className="font-mono text-xs text-stone-500 block mb-2 font-bold uppercase">NO MATCHING REVIEWS FOUND</span>
-                            <p className="font-sans text-stone-400 italic">"Try typing a different keyword or category, or click clear to show all reviews!"</p>
+                            <span className="font-mono text-xs text-stone-500 block mb-2 font-bold uppercase">
+                              NO MATCHING REVIEWS FOUND
+                            </span>
+                            <p className="font-sans text-stone-400 italic">
+                              "Try typing a different keyword or category, or
+                              click clear to show all reviews!"
+                            </p>
                           </div>
                         );
                       }
 
                       return (
                         <div className="flex flex-col gap-5">
-                          {filteredReviews.slice(0, reviewsLimit).map((rev, idx) => {
-                            const theme = getGameTheme(rev.gameTitle);
-                            
-                            // Beautiful, bright 2D sticker shadows that surround the red floating card!
-                            const stickerColors = [
-                              '#facc15', // Neon Yellow
-                              '#38bdf8', // Neon Blue
-                              '#4ade80', // Neon Green
-                              '#f87171', // Neon Red
-                              '#c084fc', // Grape Purple
-                              '#fb923c', // Electric Orange
-                              '#22d3ee', // Cyan Spark
-                            ];
-                            const shadowColor = stickerColors[idx % stickerColors.length];
-                            
-                            // Alternate rotations slightly to look completely mixed/scattered all over the background!
-                            const rotations = [
-                              'rotate-[-1.2deg] hover:rotate-[0.5deg]',
-                              'rotate-[1deg] hover:rotate-[-0.5deg]',
-                              'rotate-[-0.8deg] hover:rotate-[1deg]',
-                              'rotate-[1.2deg] hover:rotate-[-1.2deg]',
-                              'rotate-[-0.5deg] hover:rotate-[0.8deg]',
-                              'rotate-[0.7deg] hover:rotate-[-0.7deg]',
-                            ];
-                            const rotationClass = rotations[idx % rotations.length];
+                          {filteredReviews
+                            .slice(0, reviewsLimit)
+                            .map((rev, idx) => {
+                              const theme = getGameTheme(rev.gameTitle);
+                              // Beautiful, bright 2D sticker shadows that surround the red floating card!
+                              const stickerColors = [
+                                "#facc15", // Neon Yellow
+                                "#38bdf8", // Neon Blue
+                                "#4ade80", // Neon Green
+                                "#f87171", // Neon Red
+                                "#c084fc", // Grape Purple
+                                "#fb923c", // Electric Orange
+                                "#22d3ee", // Cyan Spark
+                              ];
+                              const shadowColor =
+                                stickerColors[idx % stickerColors.length];
+                              // Alternate rotations slightly to look completely mixed/scattered all over the background!
+                              const rotations = [
+                                "rotate-[-1.2deg] hover:rotate-[0.5deg]",
+                                "rotate-[1deg] hover:rotate-[-0.5deg]",
+                                "rotate-[-0.8deg] hover:rotate-[1deg]",
+                                "rotate-[1.2deg] hover:rotate-[-1.2deg]",
+                                "rotate-[-0.5deg] hover:rotate-[0.8deg]",
+                                "rotate-[0.7deg] hover:rotate-[-0.7deg]",
+                              ];
+                              const rotationClass =
+                                rotations[idx % rotations.length];
 
-                            return (
-                              <article 
-                                key={rev.id}
-                                onClick={() => setSelectedReviewId(rev.id)}
-                                className={`group border-3 rounded-2xl p-6 transition-all duration-700 cursor-pointer flex flex-col md:flex-row justify-between items-start md:items-center gap-6 relative overflow-hidden hover:translate-x-[-2px] hover:translate-y-[-2px] active:translate-x-[1px] active:translate-y-[1px] active:shadow-[2px_2px_0px_0px_#000] bg-[position:0%_0%] hover:bg-[position:100%_100%] ${rotationClass}`}
-                                style={{
-                                  ...theme.bgStyle,
-                                  backgroundSize: '200% 200%',
-                                  borderColor: theme.accentColorRaw,
-                                  '--accent-color': theme.accentColorRaw,
-                                  boxShadow: `6px 6px 0px 0px ${theme.accentColorRaw}`,
-                                } as React.CSSProperties}
-                              >
-                                {/* Dynamic atmospheric overlay */}
-                                {theme.ambientOverlay}
+                              return (
+                                <article
+                                  key={rev.id}
+                                  onClick={() => setSelectedReviewId(rev.id)}
+                                  className={`group border-3 rounded-2xl p-6 transition-all duration-700 cursor-pointer flex flex-col md:flex-row justify-between items-start md:items-center gap-6 relative overflow-hidden hover:translate-x-[-2px] hover:translate-y-[-2px] active:translate-x-[1px] active:translate-y-[1px] active:shadow-[2px_2px_0px_0px_#000] bg-[position:0%_0%] hover:bg-[position:100%_100%] ${rotationClass}`}
+                                  style={{
+                                    ...theme.bgStyle,
+                                    backgroundSize: "200% 200%",
+                                    borderColor: theme.accentColorRaw,
+                                    "--accent-color": theme.accentColorRaw,
+                                    boxShadow: `6px 6px 0px 0px ${theme.accentColorRaw}`,
+                                  }}
+                                >
+                                  {/* Dynamic atmospheric overlay */}
+                                  {theme.ambientOverlay}
 
-                                {/* Poster background for the card */}
-                                {rev.imageUrl && (
-                                  <div className="absolute inset-0 z-0 select-none pointer-events-none transition-all duration-700 group-hover:scale-105 group-hover:translate-x-1 group-hover:translate-y-1">
-                                    <img 
-                                      src={rev.imageUrl} 
-                                      alt={`${rev.gameTitle} Poster`} 
-                                      referrerPolicy="no-referrer"
-                                      className="w-full h-full object-cover opacity-[0.68] filter saturate-[1.25] contrast-[1.05] transition-all duration-700 group-hover:opacity-[0.78]"
-                                    />
-                                    <div className="absolute inset-0 bg-gradient-to-r from-white/92 via-white/55 to-white/10 pointer-events-none z-0" />
-                                  </div>
-                                )}
-
-                                <div className="flex flex-col md:flex-row gap-5 items-center md:items-start flex-1 w-full z-10">
-                                  {/* Crisp Retro 2D Poster Thumbnail Cover */}
+                                  {/* Poster background for the card */}
                                   {rev.imageUrl && (
-                                    <div 
-                                      className="shrink-0 w-20 h-28 md:w-24 md:h-32 border-2 rounded-xl overflow-hidden bg-white select-none relative group-hover:rotate-1 transition-all duration-300"
+                                    <div className="absolute inset-0 z-0 select-none pointer-events-none transition-all duration-700 group-hover:scale-105 group-hover:translate-x-1 group-hover:translate-y-1">
+                                      <img
+                                        src={rev.imageUrl}
+                                        alt={`${rev.gameTitle} Poster`}
+                                        referrerPolicy="no-referrer"
+                                        className="w-full h-full object-cover opacity-[0.68] filter saturate-[1.25] contrast-[1.05] transition-all duration-700 group-hover:opacity-[0.78]"
+                                      />
+
+                                      <div className="absolute inset-0 bg-gradient-to-r from-white/92 via-white/55 to-white/10 pointer-events-none z-0" />
+                                    </div>
+                                  )}
+
+                                  <div className="flex flex-col md:flex-row gap-5 items-center md:items-start flex-1 w-full z-10">
+                                    {/* Crisp Retro 2D Poster Thumbnail Cover */}
+                                    {rev.imageUrl && (
+                                      <div
+                                        className="shrink-0 w-20 h-28 md:w-24 md:h-32 border-2 rounded-xl overflow-hidden bg-white select-none relative group-hover:rotate-1 transition-all duration-300"
+                                        style={{
+                                          borderColor: theme.accentColorRaw,
+                                          boxShadow: `3px 3px 0px 0px ${theme.accentColorRaw}`,
+                                        }}
+                                      >
+                                        <img
+                                          src={rev.imageUrl}
+                                          alt={rev.gameTitle}
+                                          referrerPolicy="no-referrer"
+                                          className="w-full h-full object-cover saturate-[1.25] contrast-[1.05]"
+                                        />
+                                      </div>
+                                    )}
+
+                                    <div className="flex-1 flex flex-col gap-2 min-w-0 w-full text-left">
+                                      <div className="flex items-center gap-2 flex-wrap text-[10px] font-mono select-none">
+                                        <span
+                                          className="uppercase flex items-center gap-1 font-bold"
+                                          style={{
+                                            color: theme.accentColorRaw,
+                                          }}
+                                        >
+                                          <Calendar
+                                            className="w-3 h-3"
+                                            style={{
+                                              color: theme.accentColorRaw,
+                                            }}
+                                          />
+                                          {rev.date}
+                                        </span>
+                                        <span
+                                          className="px-2 py-0.5 rounded-lg font-bold uppercase border-2"
+                                          style={{
+                                            color: theme.accentColorRaw,
+                                            backgroundColor: `${theme.accentColorRaw}0d`,
+                                            borderColor: theme.accentColorRaw,
+                                          }}
+                                        >
+                                          {rev.category === "movie"
+                                            ? "🎬 MOVIE"
+                                            : rev.category === "show"
+                                              ? "📺 SHOW"
+                                              : "🎮 GAME"}
+                                          : {rev.gameTitle}
+                                        </span>
+                                        <span
+                                          className="font-bold opacity-75 uppercase tracking-wider"
+                                          style={{
+                                            color: theme.accentColorRaw,
+                                          }}
+                                        >
+                                          {theme.themeName.split(" // ")[0]}
+                                        </span>
+                                      </div>
+                                      <h3
+                                        className={`font-black text-xl md:text-2xl transition-colors uppercase leading-tight ${theme.headingFont}`}
+                                        style={{ color: theme.accentColorRaw }}
+                                      >
+                                        {rev.title}
+                                      </h3>
+                                      <p
+                                        className={`text-xs font-medium leading-relaxed max-w-2xl line-clamp-2 italic ${theme.bodyFont}`}
+                                        style={{ color: theme.accentColorRaw }}
+                                      >
+                                        "{rev.summary}"
+                                      </p>
+                                    </div>
+                                  </div>
+
+                                  <div className="flex items-center gap-3 self-end md:self-auto shrink-0 relative z-10 select-none">
+                                    <span
+                                      className="border-2 rounded-xl text-[11px] font-mono font-black px-3 py-1.5 flex items-center gap-1 transition-all"
                                       style={{
+                                        color: theme.accentColorRaw,
+                                        backgroundColor: `${theme.accentColorRaw}0d`,
                                         borderColor: theme.accentColorRaw,
-                                        boxShadow: `3px 3px 0px 0px ${theme.accentColorRaw}`
+                                        boxShadow: `2px 2px 0px 0px ${theme.accentColorRaw}33`,
                                       }}
                                     >
-                                      <img 
-                                        src={rev.imageUrl} 
-                                        alt={rev.gameTitle} 
-                                        referrerPolicy="no-referrer"
-                                        className="w-full h-full object-cover saturate-[1.25] contrast-[1.05]"
+                                      <Award
+                                        className="w-3.5 h-3.5 animate-bounce"
+                                        style={{ color: theme.accentColorRaw }}
                                       />
-                                    </div>
-                                  )}
-
-                                  <div className="flex-1 flex flex-col gap-2 min-w-0 w-full text-left">
-                                    <div className="flex items-center gap-2 flex-wrap text-[10px] font-mono select-none">
-                                      <span className="uppercase flex items-center gap-1 font-bold" style={{ color: theme.accentColorRaw }}>
-                                        <Calendar className="w-3 h-3" style={{ color: theme.accentColorRaw }} />
-                                        {rev.date}
-                                      </span>
-                                      <span className="px-2 py-0.5 rounded-lg font-bold uppercase border-2" style={{ color: theme.accentColorRaw, backgroundColor: `${theme.accentColorRaw}0d`, borderColor: theme.accentColorRaw }}>
-                                        {rev.category === 'movie' ? '🎬 MOVIE' : rev.category === 'show' ? '📺 SHOW' : '🎮 GAME'}: {rev.gameTitle}
-                                      </span>
-                                      <span className="font-bold opacity-75 uppercase tracking-wider" style={{ color: theme.accentColorRaw }}>
-                                        {theme.themeName.split(" // ")[0]}
-                                      </span>
-                                    </div>
-                                    <h3 className={`font-black text-xl md:text-2xl transition-colors uppercase leading-tight ${theme.headingFont}`} style={{ color: theme.accentColorRaw }}>
-                                      {rev.title}
-                                    </h3>
-                                    <p className={`text-xs font-medium leading-relaxed max-w-2xl line-clamp-2 italic ${theme.bodyFont}`} style={{ color: theme.accentColorRaw }}>
-                                      "{rev.summary}"
-                                    </p>
+                                      {rev.rating}
+                                    </span>
+                                    {showAdmin && (
+                                      <button
+                                        onClick={(e) => {
+                                          e.stopPropagation();
+                                          handleDeleteReview(rev.id);
+                                        }}
+                                        className="p-1.5 border-2 border-stone-900 text-stone-700 hover:text-red-500 hover:border-red-500 bg-white cursor-pointer rounded-lg shadow-[2px_2px_0px_0px_#1c1917] active:translate-x-[1px] active:translate-y-[1px] active:shadow-none transition-all"
+                                        title="Delete post"
+                                      >
+                                        <Trash className="w-3.5 h-3.5" />
+                                      </button>
+                                    )}
                                   </div>
-                                </div>
-
-                                <div className="flex items-center gap-3 self-end md:self-auto shrink-0 relative z-10 select-none">
-                                  <span 
-                                    className="border-2 rounded-xl text-[11px] font-mono font-black px-3 py-1.5 flex items-center gap-1 transition-all"
-                                    style={{ 
-                                      color: theme.accentColorRaw,
-                                      backgroundColor: `${theme.accentColorRaw}0d`,
-                                      borderColor: theme.accentColorRaw,
-                                      boxShadow: `2px 2px 0px 0px ${theme.accentColorRaw}33`
-                                    }}
-                                  >
-                                    <Award className="w-3.5 h-3.5 animate-bounce" style={{ color: theme.accentColorRaw }} />
-                                    {rev.rating}
-                                  </span>
-                                  {showAdmin && (
-                                    <button 
-                                      onClick={(e) => { e.stopPropagation(); handleDeleteReview(rev.id); }}
-                                      className="p-1.5 border-2 border-stone-900 text-stone-700 hover:text-red-500 hover:border-red-500 bg-white cursor-pointer rounded-lg shadow-[2px_2px_0px_0px_#1c1917] active:translate-x-[1px] active:translate-y-[1px] active:shadow-none transition-all"
-                                      title="Delete post"
-                                    >
-                                      <Trash className="w-3.5 h-3.5" />
-                                    </button>
-                                  )}
-                                </div>
-                              </article>
-                            );
-                          })}
+                                </article>
+                              );
+                            })}
 
                           {filteredReviews.length > 5 && (
                             <div className="flex justify-center gap-4 mt-2">
                               {filteredReviews.length > reviewsLimit && (
                                 <button
-                                  onClick={() => setReviewsLimit((prev) => prev + 5)}
+                                  onClick={() =>
+                                    setReviewsLimit((prev) => prev + 5)
+                                  }
                                   className="px-5 py-2.5 bg-white hover:bg-stone-50 text-stone-800 font-sans text-xs font-bold uppercase tracking-wider rounded-xl transition-all cursor-pointer shadow-[2px_2px_0px_0px_#1c1917] active:translate-x-[1px] active:translate-y-[1px] active:shadow-none border-2 border-stone-900"
                                 >
                                   Load Older Reviews (+5)
@@ -2056,83 +2522,99 @@ export default function App() {
                     {blogData.backlog && blogData.backlog.length > 0 && (
                       <div className="mt-8 border-t-2 border-stone-800 pt-8">
                         <div className="flex items-center gap-2 mb-4 select-none">
-                          <CheckCircle className="w-4 h-4" style={{ color: customMascot.liquidColor }} />
-                          <h4 className="font-display font-black text-sm uppercase tracking-wider text-stone-100">Logged Previous Gameplays ({blogData.backlog.length})</h4>
+                          <CheckCircle
+                            className="w-4 h-4"
+                            style={{ color: customMascot.liquidColor }}
+                          />
+                          <h4 className="font-display font-black text-sm uppercase tracking-wider text-stone-100">
+                            Logged Previous Gameplays ({blogData.backlog.length}
+                            )
+                          </h4>
                         </div>
                         <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
-                          {blogData.backlog.slice(0, backlogLimit).map((game: any, idx: number) => {
-                            // Beautiful colorful shadows for backlog items as well!
-                            const stickerColors = [
-                              '#4ade80', // Neon Green
-                              '#fb923c', // Electric Orange
-                              '#facc15', // Neon Yellow
-                              '#38bdf8', // Neon Blue
-                              '#c084fc', // Grape Purple
-                            ];
-                            const shadowColor = stickerColors[idx % stickerColors.length];
-                            
-                            // Slight alternating rotation for backlog stickers
-                            const rotations = [
-                              'rotate-[1deg] hover:rotate-0',
-                              'rotate-[-0.8deg] hover:rotate-0',
-                              'rotate-[0.5deg] hover:rotate-[1deg]',
-                              'rotate-[-1.2deg] hover:rotate-[-0.5deg]',
-                            ];
-                            const rotationClass = rotations[idx % rotations.length];
+                          {blogData.backlog
+                            .slice(0, backlogLimit)
+                            .map((game, idx) => {
+                              // Beautiful colorful shadows for backlog items as well!
+                              const stickerColors = [
+                                "#4ade80", // Neon Green
+                                "#fb923c", // Electric Orange
+                                "#facc15", // Neon Yellow
+                                "#38bdf8", // Neon Blue
+                                "#c084fc", // Grape Purple
+                              ];
+                              const shadowColor =
+                                stickerColors[idx % stickerColors.length];
+                              // Slight alternating rotation for backlog stickers
+                              const rotations = [
+                                "rotate-[1deg] hover:rotate-0",
+                                "rotate-[-0.8deg] hover:rotate-0",
+                                "rotate-[0.5deg] hover:rotate-[1deg]",
+                                "rotate-[-1.2deg] hover:rotate-[-0.5deg]",
+                              ];
+                              const rotationClass =
+                                rotations[idx % rotations.length];
 
-                            return (
-                              <div 
-                                key={game.id}
-                                onClick={() => setSelectedReviewId(game.title)}
-                                className={`group bg-white border-3 border-stone-950 rounded-xl p-4 transition-all cursor-pointer flex gap-4 hover:translate-x-[-1px] hover:translate-y-[-1px] active:translate-x-[1px] active:translate-y-[1px] active:shadow-none relative overflow-hidden ${rotationClass}`}
-                                style={{
-                                  boxShadow: `4px 4px 0px 0px ${shadowColor}`,
-                                }}
-                              >
-                              {game.imageUrl && (
-                                <div className="w-12 h-16 shrink-0 bg-stone-100 border-2 border-stone-900 rounded-lg overflow-hidden relative">
-                                  <img 
-                                    src={game.imageUrl} 
-                                    alt={game.title} 
-                                    className="w-full h-full object-cover group-hover:scale-105 transition-transform" 
-                                    referrerPolicy="no-referrer" 
-                                  />
-                                </div>
-                              )}
-                              <div className="flex-1 min-w-0">
-                                <div className="flex items-center justify-between gap-1 mb-1">
-                                  <span className="font-mono text-[8px] bg-stone-100 px-1.5 py-0.5 border-2 border-stone-900 text-[#D06F52] font-black uppercase rounded-lg truncate max-w-[120px]">
-                                    {game.platform}
-                                  </span>
-                                  <span className="font-mono text-[9px] text-[#D06F52] font-bold shrink-0">
-                                    {game.rating}
-                                  </span>
-                                </div>
-                                <h5 className="font-display font-black text-sm text-stone-900 group-hover:text-[#D06F52] transition-colors truncate">
-                                  {game.title}
-                                </h5>
-                                <p className="font-sans text-[11px] text-stone-500 line-clamp-1 italic mt-1">
-                                  "{game.quickReview}"
-                                </p>
-                              </div>
-                              {showAdmin && (
-                                <button 
-                                  onClick={(e) => { e.stopPropagation(); handleDeleteBacklog(game.id); }}
-                                  className="absolute right-2 bottom-2 p-1 border-2 border-stone-900 text-stone-700 hover:text-red-500 hover:border-red-500 bg-white cursor-pointer rounded-md z-10 shadow-[1px_1px_0px_0px_#1c1917] active:translate-x-[1px] active:translate-y-[1px] active:shadow-none transition-all"
+                              return (
+                                <div
+                                  key={game.id}
+                                  onClick={() =>
+                                    setSelectedReviewId(game.title)
+                                  }
+                                  className={`group bg-white border-3 border-stone-950 rounded-xl p-4 transition-all cursor-pointer flex gap-4 hover:translate-x-[-1px] hover:translate-y-[-1px] active:translate-x-[1px] active:translate-y-[1px] active:shadow-none relative overflow-hidden ${rotationClass}`}
+                                  style={{
+                                    boxShadow: `4px 4px 0px 0px ${shadowColor}`,
+                                  }}
                                 >
-                                  <Trash className="w-3 h-3" />
-                                </button>
-                              )}
-                              </div>
-                            );
-                          })}
+                                  {game.imageUrl && (
+                                    <div className="w-12 h-16 shrink-0 bg-stone-100 border-2 border-stone-900 rounded-lg overflow-hidden relative">
+                                      <img
+                                        src={game.imageUrl}
+                                        alt={game.title}
+                                        className="w-full h-full object-cover group-hover:scale-105 transition-transform"
+                                        referrerPolicy="no-referrer"
+                                      />
+                                    </div>
+                                  )}
+                                  <div className="flex-1 min-w-0">
+                                    <div className="flex items-center justify-between gap-1 mb-1">
+                                      <span className="font-mono text-[8px] bg-stone-100 px-1.5 py-0.5 border-2 border-stone-900 text-[#D06F52] font-black uppercase rounded-lg truncate max-w-[120px]">
+                                        {game.platform}
+                                      </span>
+                                      <span className="font-mono text-[9px] text-[#D06F52] font-bold shrink-0">
+                                        {game.rating}
+                                      </span>
+                                    </div>
+                                    <h5 className="font-display font-black text-sm text-stone-900 group-hover:text-[#D06F52] transition-colors truncate">
+                                      {game.title}
+                                    </h5>
+                                    <p className="font-sans text-[11px] text-stone-500 line-clamp-1 italic mt-1">
+                                      "{game.quickReview}"
+                                    </p>
+                                  </div>
+                                  {showAdmin && (
+                                    <button
+                                      onClick={(e) => {
+                                        e.stopPropagation();
+                                        handleDeleteBacklog(game.id);
+                                      }}
+                                      className="absolute right-2 bottom-2 p-1 border-2 border-stone-900 text-stone-700 hover:text-red-500 hover:border-red-500 bg-white cursor-pointer rounded-md z-10 shadow-[1px_1px_0px_0px_#1c1917] active:translate-x-[1px] active:translate-y-[1px] active:shadow-none transition-all"
+                                    >
+                                      <Trash className="w-3 h-3" />
+                                    </button>
+                                  )}
+                                </div>
+                              );
+                            })}
                         </div>
 
                         {blogData.backlog.length > 5 && (
                           <div className="flex justify-center gap-4 mt-6">
                             {blogData.backlog.length > backlogLimit && (
                               <button
-                                onClick={() => setBacklogLimit((prev) => prev + 5)}
+                                onClick={() =>
+                                  setBacklogLimit((prev) => prev + 5)
+                                }
                                 className="px-5 py-2.5 bg-white hover:bg-stone-50 text-stone-800 font-sans text-xs font-bold uppercase tracking-wider rounded-xl transition-all cursor-pointer shadow-[2px_2px_0px_0px_#1c1917] active:translate-x-[1px] active:translate-y-[1px] active:shadow-none border-2 border-stone-900"
                               >
                                 Load More Gameplays (+5)
@@ -2154,9 +2636,13 @@ export default function App() {
                 ) : (
                   /* SINGLE REVIEW READER DISPLAY (EXQUISITELY SIMPLE & CLEAN ARTICLE VIEW) */
                   (() => {
-                    const finalRev = blogData.reviews.find(r => r.id === selectedReviewId) ||
-                                 blogData.reviews.find(r => r.gameTitle.toLowerCase() === selectedReviewId.toLowerCase());
-                    
+                    const finalRev =
+                      blogData.reviews.find((r) => r.id === selectedReviewId) ||
+                      blogData.reviews.find(
+                        (r) =>
+                          r.gameTitle.toLowerCase() ===
+                          selectedReviewId.toLowerCase(),
+                      );
                     if (!finalRev) return null;
                     const theme = getGameTheme(finalRev.gameTitle);
 
@@ -2177,12 +2663,13 @@ export default function App() {
                         {/* Game poster background for the review and all of that */}
                         {finalRev.imageUrl && (
                           <div className="absolute inset-0 z-0 select-none pointer-events-none">
-                            <img 
-                              src={finalRev.imageUrl} 
-                              alt={`${finalRev.gameTitle} Poster`} 
+                            <img
+                              src={finalRev.imageUrl}
+                              alt={`${finalRev.gameTitle} Poster`}
                               referrerPolicy="no-referrer"
                               className="w-full h-full object-cover opacity-[0.68] filter saturate-[1.25] contrast-[1.05]"
                             />
+
                             {/* Gradient wash to ensure readability on left side */}
                             <div className="absolute inset-0 bg-gradient-to-r from-white/92 via-white/55 to-white/10 pointer-events-none z-0" />
                           </div>
@@ -2195,25 +2682,34 @@ export default function App() {
                               color: theme.accentColorRaw,
                               backgroundColor: `${theme.accentColorRaw}0d`,
                               borderColor: theme.accentColorRaw,
-                              boxShadow: `2px 2px 0px 0px ${theme.accentColorRaw}33`
+                              boxShadow: `2px 2px 0px 0px ${theme.accentColorRaw}33`,
                             }}
                             className="self-start flex items-center gap-1.5 font-sans text-[11px] font-bold cursor-pointer border-2 rounded-xl px-4 py-2 transition-all hover:opacity-90 active:translate-x-[1px] active:translate-y-[1px] active:shadow-none"
                           >
-                            <ArrowLeft className="w-3.5 h-3.5" style={{ color: theme.accentColorRaw }} /> Back to Reviews
+                            <ArrowLeft
+                              className="w-3.5 h-3.5"
+                              style={{ color: theme.accentColorRaw }}
+                            />{" "}
+                            Back to Reviews
                           </button>
 
-                          <div className="flex flex-col md:flex-row gap-6 items-center md:items-start border-b pb-6" style={{ borderBottomColor: `${theme.accentColorRaw}25` }}>
+                          <div
+                            className="flex flex-col md:flex-row gap-6 items-center md:items-start border-b pb-6"
+                            style={{
+                              borderBottomColor: `${theme.accentColorRaw}25`,
+                            }}
+                          >
                             {finalRev.imageUrl && (
-                              <div 
+                              <div
                                 className="shrink-0 w-28 h-40 md:w-36 md:h-52 border-2 rounded-2xl overflow-hidden bg-white select-none relative rotate-[-1.5deg] hover:rotate-0 transition-all duration-300"
                                 style={{
                                   borderColor: theme.accentColorRaw,
-                                  boxShadow: `4px 4px 0px 0px ${theme.accentColorRaw}`
+                                  boxShadow: `4px 4px 0px 0px ${theme.accentColorRaw}`,
                                 }}
                               >
-                                <img 
-                                  src={finalRev.imageUrl} 
-                                  alt={finalRev.gameTitle} 
+                                <img
+                                  src={finalRev.imageUrl}
+                                  alt={finalRev.gameTitle}
                                   referrerPolicy="no-referrer"
                                   className="w-full h-full object-cover saturate-[1.25] contrast-[1.05]"
                                 />
@@ -2222,40 +2718,55 @@ export default function App() {
 
                             <div className="flex-1 flex flex-col gap-3 text-center md:text-left">
                               <div className="flex items-center justify-center md:justify-start gap-2 flex-wrap select-none text-[10px] font-mono">
-                                <span className="uppercase flex items-center gap-1 font-bold" style={{ color: theme.accentColorRaw }}>
-                                  <Calendar className="w-3 h-3" style={{ color: theme.accentColorRaw }} />
+                                <span
+                                  className="uppercase flex items-center gap-1 font-bold"
+                                  style={{ color: theme.accentColorRaw }}
+                                >
+                                  <Calendar
+                                    className="w-3 h-3"
+                                    style={{ color: theme.accentColorRaw }}
+                                  />
                                   {finalRev.date}
                                 </span>
-                                <span 
+                                <span
                                   className="px-2 py-0.5 rounded-lg font-bold uppercase border-2"
-                                  style={{ 
+                                  style={{
                                     color: theme.accentColorRaw,
                                     borderColor: theme.accentColorRaw,
-                                    backgroundColor: `${theme.accentColorRaw}0d`
+                                    backgroundColor: `${theme.accentColorRaw}0d`,
                                   }}
                                 >
-                                  {finalRev.category === 'movie' ? '🎬 MOVIE' : finalRev.category === 'show' ? '📺 SHOW' : '🎮 GAME'}: {finalRev.gameTitle}
+                                  {finalRev.category === "movie"
+                                    ? "🎬 MOVIE"
+                                    : finalRev.category === "show"
+                                      ? "📺 SHOW"
+                                      : "🎮 GAME"}
+                                  : {finalRev.gameTitle}
                                 </span>
-                                <span 
+                                <span
                                   className="px-2 py-0.5 rounded-lg font-bold flex items-center gap-1 uppercase border-2"
                                   style={{
                                     color: theme.accentColorRaw,
                                     borderColor: theme.accentColorRaw,
-                                    backgroundColor: `${theme.accentColorRaw}0d`
+                                    backgroundColor: `${theme.accentColorRaw}0d`,
                                   }}
                                 >
-                                  <Award className="w-3 h-3" style={{ color: theme.accentColorRaw }} /> Score {finalRev.rating}
+                                  <Award
+                                    className="w-3 h-3"
+                                    style={{ color: theme.accentColorRaw }}
+                                  />{" "}
+                                  Score {finalRev.rating}
                                 </span>
-                                
-                                <span 
+
+                                <span
                                   className="opacity-75 uppercase tracking-wider font-bold"
                                   style={{ color: theme.accentColorRaw }}
                                 >
                                   {theme.themeName}
                                 </span>
                               </div>
-                              
-                              <h2 
+
+                              <h2
                                 className={`font-black text-3xl md:text-4xl leading-tight uppercase tracking-tight ${theme.headingFont}`}
                                 style={{ color: theme.accentColorRaw }}
                               >
@@ -2265,55 +2776,75 @@ export default function App() {
                           </div>
 
                           {/* Distraction-free Summary panel */}
-                          <div 
+                          <div
                             className={`p-4 border-2 rounded-xl text-xs italic leading-relaxed ${theme.bodyFont}`}
-                            style={{ 
-                              borderLeftWidth: '6px', 
+                            style={{
+                              borderLeftWidth: "6px",
                               borderLeftColor: theme.accentColorRaw,
                               borderColor: theme.accentColorRaw,
                               color: theme.accentColorRaw,
                               backgroundColor: `${theme.accentColorRaw}0d`,
-                              boxShadow: `2px 2px 0px 0px ${theme.accentColorRaw}33`
+                              boxShadow: `2px 2px 0px 0px ${theme.accentColorRaw}33`,
                             }}
                           >
-                            <span className="font-mono text-[8px] uppercase font-black block mb-1" style={{ color: theme.accentColorRaw }}>QUICK SYNOPSIS</span>
+                            <span
+                              className="font-mono text-[8px] uppercase font-black block mb-1"
+                              style={{ color: theme.accentColorRaw }}
+                            >
+                              QUICK SYNOPSIS
+                            </span>
                             "{finalRev.summary}"
                           </div>
 
                           {/* Interactive highlights warning */}
-                          <div 
+                          <div
                             className="p-3 text-[10px] font-sans leading-relaxed border-2 rounded-xl flex items-center gap-2 select-none"
                             style={{
                               borderColor: theme.accentColorRaw,
                               color: theme.accentColorRaw,
-                              backgroundColor: `${theme.accentColorRaw}05`
+                              backgroundColor: `${theme.accentColorRaw}05`,
                             }}
                           >
-                            <Sparkles className="w-3.5 h-3.5 shrink-0 animate-pulse" style={{ color: theme.accentColorRaw }} />
-                            <span className={`font-medium ${theme.bodyFont}`}>Double-click or drag-highlight any word/phrase in the essay below to trigger the dynamic cozy wiki search!</span>
+                            <Sparkles
+                              className="w-3.5 h-3.5 shrink-0 animate-pulse"
+                              style={{ color: theme.accentColorRaw }}
+                            />
+                            <span className={`font-medium ${theme.bodyFont}`}>
+                              Double-click or drag-highlight any word/phrase in
+                              the essay below to trigger the dynamic cozy wiki
+                              search!
+                            </span>
                           </div>
 
                           {/* Beautifully centered clean typewriter paragraphs */}
-                          <div 
+                          <div
                             className={`flex flex-col gap-4 select-text border-t pt-6 text-[15px] leading-relaxed ${theme.bodyFont}`}
-                            style={{ 
+                            style={{
                               borderTopColor: `${theme.accentColorRaw}33`,
-                              color: theme.accentColorRaw 
+                              color: theme.accentColorRaw,
                             }}
                           >
                             {finalRev.paragraphs.map((p, index) => (
-                              <p key={index} className="text-justify mb-2 leading-relaxed whitespace-pre-line">
+                              <p
+                                key={index}
+                                className="text-justify mb-2 leading-relaxed whitespace-pre-line"
+                              >
                                 {p}
                               </p>
                             ))}
                           </div>
 
-                          <div 
+                          <div
                             className="border-t pt-5 flex justify-between items-center font-mono text-[9px] text-stone-400 select-none mt-4 font-bold"
-                            style={{ borderTopColor: `${theme.accentColorRaw}15` }}
+                            style={{
+                              borderTopColor: `${theme.accentColorRaw}15`,
+                            }}
                           >
                             <span>WRITTEN BY JOE // COZY BLOGGER</span>
-                            <span style={{ color: theme.accentColorRaw }}>COZY PRESS v2.5 // {theme.themeName.split(" // ")[0]}</span>
+                            <span style={{ color: theme.accentColorRaw }}>
+                              COZY PRESS v2.5 //{" "}
+                              {theme.themeName.split(" // ")[0]}
+                            </span>
                           </div>
                         </div>
                       </motion.article>
@@ -2321,28 +2852,34 @@ export default function App() {
                   })()
                 )}
               </AnimatePresence>
-
             </div>
           )}
 
           {/* UPCOMING SECTIONS: GAMES, SHOWS, MOVIES */}
-          {['upcoming-games', 'upcoming-shows', 'upcoming-movies'].includes(activeSection) && (
+          {["upcoming-games", "upcoming-shows", "upcoming-movies"].includes(
+            activeSection,
+          ) && (
             <section className="bg-stone-900 border-3 border-stone-950 rounded-3xl p-6 flex flex-col gap-6 text-stone-100 shadow-[6px_6px_0px_0px_#09090b]">
-              
               <div className="flex items-center gap-3 border-b-2 border-stone-800 pb-4 select-none">
                 <div className="p-2 bg-stone-950 border-2 border-stone-800 shrink-0 shadow-[2px_2px_0px_0px_#000] rounded-xl">
-                  {activeSection === 'upcoming-games' ? (
+                  {activeSection === "upcoming-games" ? (
                     <span className="text-xl">🎮</span>
-                  ) : activeSection === 'upcoming-shows' ? (
+                  ) : activeSection === "upcoming-shows" ? (
                     <span className="text-xl">📺</span>
                   ) : (
                     <span className="text-xl">🎬</span>
                   )}
                 </div>
                 <div>
-                  <span className="text-[10px] font-mono text-stone-400 tracking-wider block uppercase font-bold">WATCHLIST & WISHLIST</span>
+                  <span className="text-[10px] font-mono text-stone-400 tracking-wider block uppercase font-bold">
+                    WATCHLIST & WISHLIST
+                  </span>
                   <h3 className="font-display font-black text-xl uppercase tracking-tight text-stone-100">
-                    {activeSection === 'upcoming-games' ? "Up and Coming Games" : activeSection === 'upcoming-shows' ? "Up and Coming TV Shows" : "Up and Coming Movies"}
+                    {activeSection === "upcoming-games"
+                      ? "Up and Coming Games"
+                      : activeSection === "upcoming-shows"
+                        ? "Up and Coming TV Shows"
+                        : "Up and Coming Movies"}
                   </h3>
                 </div>
               </div>
@@ -2350,23 +2887,31 @@ export default function App() {
               {/* SEARCH CONTAINER */}
               <div className="bg-[#FCF6E5] border-3 border-stone-950 rounded-3xl p-5 flex flex-col gap-4 shadow-[6px_6px_0px_0px_#09090b] hover:shadow-[6px_6px_0px_0px_#facc15] hover:border-yellow-400 text-stone-900 transition-all duration-300">
                 <span className="font-pressstart text-[8px] text-[#ef4444] block select-none uppercase tracking-widest">
-                  Search & Track Upcoming {activeSection === 'upcoming-games' ? 'Games' : activeSection === 'upcoming-shows' ? 'Shows' : 'Movies'}
+                  Search & Track Upcoming{" "}
+                  {activeSection === "upcoming-games"
+                    ? "Games"
+                    : activeSection === "upcoming-shows"
+                      ? "Shows"
+                      : "Movies"}
                 </span>
-                
-                <form onSubmit={handleSearchUpcoming} className="flex flex-col sm:flex-row gap-3 items-center w-full">
+
+                <form
+                  onSubmit={handleSearchUpcoming}
+                  className="flex flex-col sm:flex-row gap-3 items-center w-full"
+                >
                   <div className="relative w-full flex items-center gap-2">
                     <div className="relative flex-1 group">
                       <Search className="absolute left-3.5 top-3.5 w-4 h-4 text-stone-500 transition-colors duration-300 group-hover:text-[#ef4444] group-focus-within:text-[#ef4444] pointer-events-none z-10" />
-                      <input 
+                      <input
                         placeholder={
-                          activeSection === 'upcoming-games' 
-                            ? "Search an upcoming game (e.g. GTA VI, Metroid Prime 4)..." 
-                            : activeSection === 'upcoming-shows' 
-                            ? "Search an upcoming TV show (e.g. Severance Season 2, Stranger Things 5)..." 
-                            : "Search an upcoming movie (e.g. Dune Part 3, Batman Part II)..."
+                          activeSection === "upcoming-games"
+                            ? "Search an upcoming game (e.g. GTA VI, Metroid Prime 4)..."
+                            : activeSection === "upcoming-shows"
+                              ? "Search an upcoming TV show (e.g. Severance Season 2, Stranger Things 5)..."
+                              : "Search an upcoming movie (e.g. Dune Part 3, Batman Part II)..."
                         }
                         value={upcomingQuery}
-                        onChange={e => setUpcomingQuery(e.target.value)}
+                        onChange={(e) => setUpcomingQuery(e.target.value)}
                         className="w-full text-xs font-mono pl-10 pr-4 py-3 bg-white border-2 border-stone-300 rounded-xl text-stone-900 placeholder-stone-500 focus:outline-none focus:ring-0 transition-all duration-150 hover:bg-stone-50 hover:border-stone-400 focus:bg-white focus:border-[#ef4444]"
                       />
                     </div>
@@ -2393,7 +2938,9 @@ export default function App() {
               {isSearchingUpcoming && (
                 <div className="flex flex-col items-center justify-center p-8 border-3 border-stone-950 rounded-3xl bg-[#FCF6E5] shadow-[6px_6px_0px_0px_#09090b]">
                   <Loader2 className="w-8 h-8 animate-spin text-[#ef4444] mb-3" />
-                  <span className="font-mono text-xs font-bold text-stone-700 uppercase tracking-widest animate-pulse">Sifting Through Timelines...</span>
+                  <span className="font-mono text-xs font-bold text-stone-700 uppercase tracking-widest animate-pulse">
+                    Sifting Through Timelines...
+                  </span>
                 </div>
               )}
 
@@ -2402,9 +2949,9 @@ export default function App() {
                 <div className="bg-white text-stone-900 border-3 border-stone-950 rounded-3xl p-6 shadow-[6px_6px_0px_0px_#09090b] flex flex-col md:flex-row gap-6 relative overflow-hidden">
                   {upcomingPreview.imageUrl && (
                     <div className="w-28 h-40 shrink-0 border-2 border-stone-950 rounded-xl overflow-hidden shadow-[3px_3px_0px_0px_#000] self-center md:self-start">
-                      <img 
-                        src={upcomingPreview.imageUrl} 
-                        alt={upcomingPreview.title} 
+                      <img
+                        src={upcomingPreview.imageUrl}
+                        alt={upcomingPreview.title}
                         referrerPolicy="no-referrer"
                         className="w-full h-full object-cover saturate-[1.25] contrast-[1.05]"
                       />
@@ -2417,19 +2964,36 @@ export default function App() {
                         <span className="text-[9px] font-mono font-bold uppercase text-[#D06F52] bg-stone-100 px-2 py-0.5 border-2 border-stone-950 rounded-lg">
                           RELEASE: {upcomingPreview.releaseYear}
                         </span>
-                        <h4 className="font-display font-black text-lg md:text-xl uppercase mt-1 leading-tight">{upcomingPreview.title}</h4>
+                        <h4 className="font-display font-black text-lg md:text-xl uppercase mt-1 leading-tight">
+                          {upcomingPreview.title}
+                        </h4>
                       </div>
-                      {activeSection !== 'upcoming-games' && (
+                      {activeSection !== "upcoming-games" && (
                         <div className="bg-red-50 border-2 border-red-200 px-3 py-1 rounded-xl shadow-[2px_2px_0px_0px_#EF4444] text-xs font-mono font-bold text-red-600 flex items-center gap-1 select-none">
-                          🍅 {upcomingPreview.rottenTomatoes || '92%'}
+                          🍅 {upcomingPreview.rottenTomatoes || "92%"}
                         </div>
                       )}
                     </div>
 
                     <div className="grid grid-cols-2 gap-2 text-[11px] font-mono text-stone-600">
-                      <div><strong className="text-stone-900 uppercase">Creator:</strong> {upcomingPreview.developer}</div>
-                      <div><strong className="text-stone-900 uppercase">Genre:</strong> {upcomingPreview.genres}</div>
-                      <div className="col-span-2"><strong className="text-stone-900 uppercase">Platforms/Cast:</strong> {upcomingPreview.platforms}</div>
+                      <div>
+                        <strong className="text-stone-900 uppercase">
+                          Creator:
+                        </strong>{" "}
+                        {upcomingPreview.developer}
+                      </div>
+                      <div>
+                        <strong className="text-stone-900 uppercase">
+                          Genre:
+                        </strong>{" "}
+                        {upcomingPreview.genres}
+                      </div>
+                      <div className="col-span-2">
+                        <strong className="text-stone-900 uppercase">
+                          Platforms/Cast:
+                        </strong>{" "}
+                        {upcomingPreview.platforms}
+                      </div>
                     </div>
 
                     <p className="text-xs font-sans text-stone-500 leading-relaxed italic border-l-3 border-[#D06F52] pl-3 py-1 bg-stone-50">
@@ -2438,11 +3002,13 @@ export default function App() {
 
                     {/* HYPE NOTE TEXTAREA */}
                     <div className="mt-2 flex flex-col gap-1">
-                      <label className="text-[10px] font-mono font-black uppercase text-stone-500">My Personal Hype Notes (Optional):</label>
+                      <label className="text-[10px] font-mono font-black uppercase text-stone-500">
+                        My Personal Hype Notes (Optional):
+                      </label>
                       <textarea
                         placeholder="e.g. S1 was incredibly mind-bending, can't wait for S2! Pre-ordered and cleared my schedule."
                         value={upcomingNote}
-                        onChange={e => setUpcomingNote(e.target.value)}
+                        onChange={(e) => setUpcomingNote(e.target.value)}
                         rows={2}
                         className="w-full text-xs font-mono p-2.5 border-2 border-stone-950 bg-stone-50 rounded-xl text-stone-900 placeholder-stone-400 focus:outline-none focus:border-[#ef4444]"
                       />
@@ -2468,11 +3034,12 @@ export default function App() {
 
               {/* LIST OF UPCOMING WATCHLIST ITEMS */}
               {(() => {
-                const currentList = activeSection === 'upcoming-games' 
-                  ? (blogData.upcomingGames || []) 
-                  : activeSection === 'upcoming-shows' 
-                  ? (blogData.upcomingShows || []) 
-                  : (blogData.upcomingMovies || []);
+                const currentList =
+                  activeSection === "upcoming-games"
+                    ? blogData.upcomingGames || []
+                    : activeSection === "upcoming-shows"
+                      ? blogData.upcomingShows || []
+                      : blogData.upcomingMovies || [];
 
                 if (currentList.length === 0) return null;
 
@@ -2485,20 +3052,21 @@ export default function App() {
                     <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
                       {currentList.map((item, idx) => {
                         const stickerColors = [
-                          '#facc15', // Neon Yellow
-                          '#38bdf8', // Neon Blue
-                          '#4ade80', // Neon Green
-                          '#f87171', // Neon Red
-                          '#c084fc', // Grape Purple
-                          '#fb923c', // Electric Orange
+                          "#facc15", // Neon Yellow
+                          "#38bdf8", // Neon Blue
+                          "#4ade80", // Neon Green
+                          "#f87171", // Neon Red
+                          "#c084fc", // Grape Purple
+                          "#fb923c", // Electric Orange
                         ];
-                        const shadowColor = stickerColors[idx % stickerColors.length];
+                        const shadowColor =
+                          stickerColors[idx % stickerColors.length];
 
                         const rotations = [
-                          'rotate-[-0.8deg] hover:rotate-[0.5deg]',
-                          'rotate-[0.7deg] hover:rotate-[-0.5deg]',
-                          'rotate-[-1.1deg] hover:rotate-[0.8deg]',
-                          'rotate-[1.2deg] hover:rotate-[-1.2deg]',
+                          "rotate-[-0.8deg] hover:rotate-[0.5deg]",
+                          "rotate-[0.7deg] hover:rotate-[-0.5deg]",
+                          "rotate-[-1.1deg] hover:rotate-[0.8deg]",
+                          "rotate-[1.2deg] hover:rotate-[-1.2deg]",
                         ];
                         const rotationClass = rotations[idx % rotations.length];
 
@@ -2512,9 +3080,9 @@ export default function App() {
                           >
                             {item.imageUrl && (
                               <div className="w-16 h-24 shrink-0 border-2 border-stone-950 rounded-lg overflow-hidden bg-stone-100 shadow-[2px_2px_0px_0px_#000]">
-                                <img 
-                                  src={item.imageUrl} 
-                                  alt={item.title} 
+                                <img
+                                  src={item.imageUrl}
+                                  alt={item.title}
                                   referrerPolicy="no-referrer"
                                   className="w-full h-full object-cover saturate-[1.25] contrast-[1.05]"
                                 />
@@ -2526,9 +3094,12 @@ export default function App() {
                                 <span className="font-mono text-[8px] font-bold uppercase text-[#D06F52] bg-stone-100 px-1.5 py-0.5 border-2 border-stone-950 rounded-md">
                                   {item.releaseYear}
                                 </span>
-                                {activeSection !== 'upcoming-games' && (
+                                {activeSection !== "upcoming-games" && (
                                   <span className="font-mono text-[10px] text-red-600 font-black flex items-center gap-1 bg-red-50 border-2 border-red-100 px-2 py-0.5 rounded-full">
-                                    🍅 {item.rottenTomatoes || item.hypeScore || '92%'}
+                                    🍅{" "}
+                                    {item.rottenTomatoes ||
+                                      item.hypeScore ||
+                                      "92%"}
                                   </span>
                                 )}
                               </div>
@@ -2538,8 +3109,12 @@ export default function App() {
                               </h5>
 
                               <div className="text-[10px] font-mono text-stone-500 leading-tight">
-                                <span className="block truncate"><strong>By:</strong> {item.developer}</span>
-                                <span className="block truncate"><strong>On:</strong> {item.platforms}</span>
+                                <span className="block truncate">
+                                  <strong>By:</strong> {item.developer}
+                                </span>
+                                <span className="block truncate">
+                                  <strong>On:</strong> {item.platforms}
+                                </span>
                               </div>
 
                               <p className="font-sans text-[11px] leading-relaxed text-stone-500 line-clamp-2 italic mb-1.5">
@@ -2548,7 +3123,9 @@ export default function App() {
 
                               {item.notes && (
                                 <div className="border-t border-dashed border-stone-300 pt-1.5 mt-1">
-                                  <span className="font-mono text-[8px] text-[#D06F52] font-black block select-none uppercase">📝 MY HYPE NOTE</span>
+                                  <span className="font-mono text-[8px] text-[#D06F52] font-black block select-none uppercase">
+                                    📝 MY HYPE NOTE
+                                  </span>
                                   <p className="font-sans text-[11px] text-stone-800 leading-normal bg-[#FCF6E5] p-2 rounded-lg border border-stone-200 mt-1">
                                     {item.notes}
                                   </p>
@@ -2558,7 +3135,12 @@ export default function App() {
                               {/* DELETE BUTTON - ADMIN ONLY */}
                               {showAdmin && (
                                 <button
-                                  onClick={() => handleDeleteUpcomingItem(item.id, activeSection as any)}
+                                  onClick={() =>
+                                    handleDeleteUpcomingItem(
+                                      item.id,
+                                      activeSection,
+                                    )
+                                  }
                                   className="absolute right-3 top-3 p-1 border-2 border-stone-950 text-stone-600 hover:text-red-500 hover:border-red-500 bg-white cursor-pointer rounded-lg shadow-[2px_2px_0px_0px_#000] active:translate-x-[1px] active:translate-y-[1px] active:shadow-none transition-all"
                                   title="Remove item"
                                 >
@@ -2573,10 +3155,8 @@ export default function App() {
                   </div>
                 );
               })()}
-
             </section>
           )}
-
         </main>
 
         {/* 5. FOOTER */}
@@ -2588,16 +3168,17 @@ export default function App() {
             <span>•</span>
             <span>{new Date().getFullYear()}</span>
             <span>•</span>
-            <button 
+            <button
               onClick={() => setShowAdmin(!showAdmin)}
               className="text-[#D06F52] hover:text-[#b75d42] hover:underline cursor-pointer bg-transparent border-none p-0 font-bold font-mono text-[10px] uppercase ml-1"
             >
               [{showAdmin ? "Close Desk" : "Desk"}]
             </button>
           </div>
-          <div className="text-[9px] text-stone-400">Powered by Gemini AI Search Grounding & Antigravity Core</div>
+          <div className="text-[9px] text-stone-400">
+            Powered by Gemini AI Search Grounding & Antigravity Core
+          </div>
         </footer>
-
       </div>
 
       {/* FLOATING TEXT HIGHLIGHT WIKI TOOLTIP */}
@@ -2610,10 +3191,10 @@ export default function App() {
               style={{
                 left: mousePos.x,
                 top: mousePos.y,
-                transform: `translate(16px, -110px)`
+                transform: `translate(16px, -110px)`,
               }}
             >
-              {uiState === 'GENERATING' && (
+              {uiState === "GENERATING" && (
                 <>
                   <PixelArtLoader />
                   <motion.div
@@ -2627,12 +3208,14 @@ export default function App() {
                       <div className="h-3 bg-zinc-800 rounded w-4/5 animate-pulse"></div>
                     </div>
                     <div className="w-full h-36 bg-zinc-900 rounded animate-pulse border-2 border-zinc-800 flex items-center justify-center">
-                      <span className="font-mono text-[8px] text-[#EF4444] font-bold tracking-wider">GENERATING ILLUST...</span>
+                      <span className="font-mono text-[8px] text-[#EF4444] font-bold tracking-wider">
+                        GENERATING ILLUST...
+                      </span>
                     </div>
                   </motion.div>
                 </>
               )}
-              {uiState === 'DONE' && (
+              {uiState === "DONE" && (
                 <motion.div
                   initial={{ opacity: 0, scale: 0.95, y: 15 }}
                   animate={{ opacity: 1, scale: 1, y: 0 }}
@@ -2640,19 +3223,23 @@ export default function App() {
                   className="overflow-hidden pointer-events-none flex flex-col w-[300px] bg-zinc-950 text-white border-4 border-zinc-800 p-4 shadow-2xl"
                 >
                   <div className="pb-2.5 border-b-2 border-zinc-800 mb-2.5 shrink-0">
-                    <span className="font-mono text-[8px] text-[#EF4444] font-bold uppercase tracking-widest block mb-0.5">Gamer Dictionary Wiki</span>
-                    <span className="font-display font-black text-xs text-white uppercase tracking-wide block mb-1">"{selectionText}"</span>
+                    <span className="font-mono text-[8px] text-[#EF4444] font-bold uppercase tracking-widest block mb-0.5">
+                      Gamer Dictionary Wiki
+                    </span>
+                    <span className="font-display font-black text-xs text-white uppercase tracking-wide block mb-1">
+                      "{selectionText}"
+                    </span>
                     <p className="text-[11px] font-sans text-zinc-300 leading-normal font-normal">
                       {explanation}
                     </p>
                   </div>
                   {imageUrl && (
                     <div className="w-full aspect-[4/3] shrink-0 bg-black flex items-center justify-center overflow-hidden border-2 border-zinc-800">
-                      <img 
-                        src={imageUrl} 
-                        alt="Context art" 
+                      <img
+                        src={imageUrl}
+                        alt="Context art"
                         referrerPolicy="no-referrer"
-                        className="w-full h-full object-cover" 
+                        className="w-full h-full object-cover"
                       />
                     </div>
                   )}
@@ -2662,26 +3249,34 @@ export default function App() {
 
             {/* Mobile Bottom Sheet Tooltip */}
             <motion.div
-              initial={{ y: '100%' }}
+              initial={{ y: "100%" }}
               animate={{ y: 0 }}
-              exit={{ y: '100%' }}
-              transition={{ type: 'spring', damping: 25, stiffness: 200 }}
+              exit={{ y: "100%" }}
+              transition={{ type: "spring", damping: 25, stiffness: 200 }}
               className="fixed inset-x-0 bottom-0 z-50 flex sm:hidden flex-col bg-zinc-950 text-white border-t-4 border-zinc-800 p-5 shadow-[0_-8px_30px_rgba(0,0,0,0.5)] pointer-events-auto"
-              style={{ paddingBottom: 'calc(1.25rem + env(safe-area-inset-bottom))' }}
+              style={{
+                paddingBottom: "calc(1.25rem + env(safe-area-inset-bottom))",
+              }}
             >
               <div className="w-10 h-1 bg-zinc-800 rounded-full mx-auto mb-4"></div>
-              
+
               <div className="flex justify-between items-center mb-2">
-                <span className="font-mono text-[8px] text-[#EF4444] font-bold uppercase tracking-wider">Gamer Dictionary Wiki</span>
-                <button 
-                  onClick={() => { setUiState('IDLE'); setRects([]); setSelectionText(''); }}
+                <span className="font-mono text-[8px] text-[#EF4444] font-bold uppercase tracking-wider">
+                  Gamer Dictionary Wiki
+                </span>
+                <button
+                  onClick={() => {
+                    setUiState("IDLE");
+                    setRects([]);
+                    setSelectionText("");
+                  }}
                   className="p-1 text-zinc-400 hover:text-[#EF4444] cursor-pointer"
                 >
                   <X className="w-4 h-4" />
                 </button>
               </div>
 
-              {uiState === 'GENERATING' && (
+              {uiState === "GENERATING" && (
                 <div className="flex flex-col gap-3">
                   <div className="flex flex-col gap-2 mb-2">
                     <div className="h-3 bg-zinc-800 rounded animate-pulse w-full"></div>
@@ -2692,19 +3287,21 @@ export default function App() {
                   </div>
                 </div>
               )}
-              {uiState === 'DONE' && (
+              {uiState === "DONE" && (
                 <div className="flex flex-col gap-3">
-                  <span className="font-display font-black text-sm text-white uppercase tracking-wide">"{selectionText}"</span>
+                  <span className="font-display font-black text-sm text-white uppercase tracking-wide">
+                    "{selectionText}"
+                  </span>
                   <p className="text-xs font-sans text-zinc-300 leading-relaxed">
                     {explanation}
                   </p>
                   {imageUrl && (
                     <div className="w-full h-40 bg-zinc-900 flex items-center justify-center overflow-hidden border-2 border-zinc-800">
-                      <img 
-                        src={imageUrl} 
-                        alt="Context art" 
+                      <img
+                        src={imageUrl}
+                        alt="Context art"
                         referrerPolicy="no-referrer"
-                        className="w-full h-full object-cover" 
+                        className="w-full h-full object-cover"
                       />
                     </div>
                   )}
@@ -2761,7 +3358,6 @@ export default function App() {
           </motion.div>
         )}
       </AnimatePresence>
-
     </div>
   );
 }
